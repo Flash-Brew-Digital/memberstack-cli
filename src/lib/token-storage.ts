@@ -6,10 +6,10 @@ import { refreshAccessToken, type TokenResponse } from "./oauth.js";
 
 export interface StoredTokens {
   access_token: string;
-  refresh_token?: string;
-  expires_at: number;
-  client_id: string;
   app_id?: string;
+  client_id: string;
+  expires_at: number;
+  refresh_token?: string;
 }
 
 interface JwtPayload {

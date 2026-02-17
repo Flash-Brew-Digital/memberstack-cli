@@ -9,25 +9,25 @@ import {
 } from "../lib/utils.js";
 
 interface Plan {
-  id: string;
-  name: string;
-  icon: string | null;
-  description: string | null;
-  image: string | null;
-  status: "ACTIVE" | "INACTIVE";
-  prices: unknown[];
-  permissions: unknown[];
-  memberCount: number | null;
-  priority: number | null;
-  isPaid: boolean | null;
-  copiedToLive: boolean | null;
-  limitMembers: boolean | null;
-  memberLimit: number | null;
-  teamAccountsEnabled: boolean | null;
-  teamAccountUpgradeLink: string | null;
-  teamAccountInviteSignupLink: string | null;
-  restrictToAdmin: boolean | null;
+  allowedDomains: string[] | null;
   applyLogicToTeamMembers: boolean | null;
+  copiedToLive: boolean | null;
+  description: string | null;
+  icon: string | null;
+  id: string;
+  image: string | null;
+  isPaid: boolean | null;
+  limitMembers: boolean | null;
+  logic: {
+    addedLogic: unknown;
+    removedLogic: unknown;
+  } | null;
+  memberCount: number | null;
+  memberLimit: number | null;
+  name: string;
+  permissions: unknown[];
+  prices: unknown[];
+  priority: number | null;
   redirects: {
     afterSignup: string | null;
     afterLogin: string | null;
@@ -37,11 +37,11 @@ interface Plan {
     afterReplace: string | null;
     verificationRequired: string | null;
   } | null;
-  allowedDomains: string[] | null;
-  logic: {
-    addedLogic: unknown;
-    removedLogic: unknown;
-  } | null;
+  restrictToAdmin: boolean | null;
+  status: "ACTIVE" | "INACTIVE";
+  teamAccountInviteSignupLink: string | null;
+  teamAccountsEnabled: boolean | null;
+  teamAccountUpgradeLink: string | null;
 }
 
 const PLAN_FIELDS = `

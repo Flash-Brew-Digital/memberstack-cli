@@ -4,20 +4,20 @@ import { graphqlRequest } from "../lib/graphql-client.js";
 import { printError, printRecord, printSuccess } from "../lib/utils.js";
 
 interface App {
-  id: string;
-  name: string;
-  slug: string | null;
-  status: "ACTIVE" | "DELETED";
-  stack: "REACT" | "WEBFLOW" | "VANILLA" | "WORDPRESS" | null;
+  allowMemberSelfDelete: boolean | null;
+  captchaEnabled: boolean | null;
   createdAt: string;
   deletedAt: string | null;
+  disableConcurrentLogins: boolean | null;
+  id: string;
   image: string | null;
-  captchaEnabled: boolean | null;
+  memberSessionDurationDays: number | null;
+  name: string;
   preventDisposableEmails: boolean | null;
   requireUser2FA: boolean | null;
-  disableConcurrentLogins: boolean | null;
-  memberSessionDurationDays: number | null;
-  allowMemberSelfDelete: boolean | null;
+  slug: string | null;
+  stack: "REACT" | "WEBFLOW" | "VANILLA" | "WORDPRESS" | null;
+  status: "ACTIVE" | "DELETED";
 }
 
 const APP_FIELDS = `

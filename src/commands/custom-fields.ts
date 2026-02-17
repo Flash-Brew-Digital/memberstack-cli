@@ -9,15 +9,15 @@ import {
 } from "../lib/utils.js";
 
 interface CustomField {
+  hidden: boolean;
   id: string;
   key: string;
   label: string;
-  hidden: boolean;
-  visibility: "PUBLIC" | "PRIVATE";
-  restrictToAdmin: boolean;
   order: number | null;
+  restrictToAdmin: boolean;
   tableHidden: boolean;
   tableOrder: number | null;
+  visibility: "PUBLIC" | "PRIVATE";
 }
 
 const CUSTOM_FIELD_FIELDS = `

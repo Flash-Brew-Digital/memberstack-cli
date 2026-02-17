@@ -10,28 +10,28 @@ import {
 } from "../lib/utils.js";
 
 interface TableField {
+  defaultValue: unknown;
   id: string;
   key: string;
   name: string;
-  type: string;
-  required: boolean;
-  defaultValue: unknown;
-  tableOrder: number;
-  referencedTableId: string | null;
   referencedTable?: { id: string; key: string; name: string };
+  referencedTableId: string | null;
+  required: boolean;
+  tableOrder: number;
+  type: string;
 }
 
 interface DataTable {
+  createdAt: string;
+  createRule: string;
+  deleteRule: string;
+  fields: TableField[];
   id: string;
   key: string;
   name: string;
-  createdAt: string;
-  updatedAt: string;
-  createRule: string;
   readRule: string;
+  updatedAt: string;
   updateRule: string;
-  deleteRule: string;
-  fields: TableField[];
 }
 
 const TABLE_FIELDS = `

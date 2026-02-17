@@ -1,23 +1,23 @@
 export interface PlanConnection {
+  active: boolean;
   id: string;
+  payment: unknown;
+  plan: { id: string; name: string };
   status: string;
   type: string;
-  active: boolean;
-  plan: { id: string; name: string };
-  payment: unknown;
 }
 
 export interface Member {
-  id: string;
-  createdAt: string;
-  lastLogin?: string;
   auth: {
     email: string;
   };
+  createdAt: string;
   customFields?: Record<string, unknown>;
-  metaData?: Record<string, unknown>;
+  id: string;
   json?: Record<string, unknown>;
+  lastLogin?: string;
   loginRedirect?: string;
+  metaData?: Record<string, unknown>;
   permissions: { all: string[] };
   planConnections: PlanConnection[];
 }
@@ -37,19 +37,19 @@ export type FieldType =
   | "MEMBER_REFERENCE_MANY";
 
 export interface TableField {
+  defaultValue: unknown;
   id: string;
   key: string;
   name: string;
-  type: FieldType;
-  required: boolean;
-  defaultValue: unknown;
-  tableOrder: number;
-  referencedTableId: string | null;
   referencedTable?: {
     id: string;
     key: string;
     name: string;
   };
+  referencedTableId: string | null;
+  required: boolean;
+  tableOrder: number;
+  type: FieldType;
 }
 
 export type AccessRule =
@@ -59,74 +59,74 @@ export type AccessRule =
   | "ADMIN_ONLY";
 
 export interface DataTable {
+  createdAt: string;
+  createRule: AccessRule;
+  deleteRule: AccessRule;
+  fields: TableField[];
   id: string;
   key: string;
   name: string;
-  createRule: AccessRule;
   readRule: AccessRule;
-  updateRule: AccessRule;
-  deleteRule: AccessRule;
-  createdAt: string;
   updatedAt: string;
-  fields: TableField[];
+  updateRule: AccessRule;
 }
 
 export interface DataRecord {
-  id: string;
-  tableKey?: string;
-  data: Record<string, unknown>;
   createdAt: string;
-  updatedAt: string;
+  data: Record<string, unknown>;
+  id: string;
   internalOrder: number;
+  tableKey?: string;
+  updatedAt: string;
 }
 
 export interface Plan {
-  id: string;
-  name: string;
-  icon: string | null;
-  description: string | null;
-  image: string | null;
-  status: "ACTIVE" | "INACTIVE";
-  prices: unknown[];
-  permissions: unknown[];
-  memberCount: number | null;
-  priority: number | null;
-  isPaid: boolean | null;
+  applyLogicToTeamMembers: boolean | null;
   copiedToLive: boolean | null;
+  description: string | null;
+  icon: string | null;
+  id: string;
+  image: string | null;
+  isPaid: boolean | null;
   limitMembers: boolean | null;
+  memberCount: number | null;
   memberLimit: number | null;
+  name: string;
+  permissions: unknown[];
+  prices: unknown[];
+  priority: number | null;
+  restrictToAdmin: boolean | null;
+  status: "ACTIVE" | "INACTIVE";
+  teamAccountInviteSignupLink: string | null;
   teamAccountsEnabled: boolean | null;
   teamAccountUpgradeLink: string | null;
-  teamAccountInviteSignupLink: string | null;
-  restrictToAdmin: boolean | null;
-  applyLogicToTeamMembers: boolean | null;
 }
 
 export interface PlansListOptions {
-  status?: "ALL" | "ACTIVE" | "INACTIVE";
   orderBy?: "PRIORITY" | "CREATED_AT";
+  status?: "ALL" | "ACTIVE" | "INACTIVE";
 }
 
 export interface PlansCreateOptions {
-  name: string;
   description: string;
   icon?: string;
   isPaid?: boolean;
-  teamAccountsEnabled?: boolean;
+  name: string;
   teamAccountInviteSignupLink?: string;
+  teamAccountsEnabled?: boolean;
   teamAccountUpgradeLink?: string;
 }
 
 export interface PlansUpdateOptions {
-  name?: string;
   description?: string;
   icon?: string;
-  status?: "ACTIVE" | "INACTIVE";
   limitMembers?: boolean;
   memberLimit?: string;
-  teamAccountUpgradeLink?: string;
-  teamAccountInviteSignupLink?: string;
+  name?: string;
   restrictToAdmin?: boolean;
+  status?: "ACTIVE" | "INACTIVE";
+  teamAccountInviteSignupLink?: string;
+  teamAccountUpgradeLink?: string;
 }
 
 export interface PlansOrderOptions {
@@ -135,26 +135,26 @@ export interface PlansOrderOptions {
 
 export interface MembersListOptions {
   after?: string;
-  order?: "ASC" | "DESC";
-  limit?: string;
   all?: boolean;
+  limit?: string;
+  order?: "ASC" | "DESC";
 }
 
 export interface MembersCreateOptions {
+  customFields?: string[];
   email: string;
+  loginRedirect?: string;
+  metaData?: string[];
   password: string;
   plans?: string[];
-  customFields?: string[];
-  metaData?: string[];
-  loginRedirect?: string;
 }
 
 export interface MembersUpdateOptions {
-  email?: string;
   customFields?: string[];
-  metaData?: string[];
+  email?: string;
   json?: string;
   loginRedirect?: string;
+  metaData?: string[];
 }
 
 export interface PlanOptions {
@@ -170,9 +170,9 @@ export interface RecordQueryOptions {
 }
 
 export interface MembersExportOptions {
+  all?: boolean;
   format: string;
   output: string;
-  all?: boolean;
 }
 
 export interface MembersImportOptions {
@@ -185,14 +185,14 @@ export interface MembersFindOptions {
 }
 
 export interface MembersBulkUpdateOptions {
-  file: string;
   dryRun?: boolean;
+  file: string;
 }
 
 export interface MembersBulkAddPlanOptions {
+  dryRun?: boolean;
   filter: string;
   plan: string;
-  dryRun?: boolean;
 }
 
 export interface RecordsExportOptions {
@@ -205,18 +205,18 @@ export interface RecordsImportOptions {
 }
 
 export interface RecordsFindOptions {
-  where?: string[];
-  take?: string;
   skip?: string;
+  take?: string;
+  where?: string[];
 }
 
 export interface RecordsBulkUpdateOptions {
+  dryRun?: boolean;
   file: string;
   tableKey?: string;
-  dryRun?: boolean;
 }
 
 export interface RecordsBulkDeleteOptions {
-  where?: string[];
   dryRun?: boolean;
+  where?: string[];
 }

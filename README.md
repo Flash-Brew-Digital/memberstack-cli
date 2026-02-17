@@ -5,6 +5,8 @@
 
 Manage your Memberstack account from the terminal. Authenticate via OAuth, then create, read, update, and delete apps, members, plans, data tables, records, and custom fields. Get more done and give your AI agents the power to manage your membership site with ease.
 
+[View Documentation](https://memberstack-cli.flashbrew.digital)
+
 ## Installation
 
 ```bash
@@ -28,6 +30,12 @@ memberstack whoami
 
 ```bash
 memberstack <command> <subcommand> [options]
+```
+
+## Install Agent Skill (Optional)
+
+```bash
+npx skills add 224-industries/webflow-skills --skill memberstack-cli
 ```
 
 ### Global Options
@@ -171,6 +179,10 @@ pnpm type-check
 ```
 
 See [ARCHITECTURE.md](ARCHITECTURE.md) for project structure and design details.
+
+## Resources
+
+[Documentation](https://memberstack-cli.flashbrew.digital)
 
 ## Contributing
 

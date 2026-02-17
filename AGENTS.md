@@ -41,4 +41,4 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 ## Resources
 
 [ARCHITECTURE.md](./ARCHITECTURE.md): Detailed Project Architecture
-[CONTRIBUTING.md](./CONTRIBUTING.md): Project Contribution Guidelines
+[CONTRIBUTING.md](.github/CONTRIBUTING.md): Project Contribution Guidelines

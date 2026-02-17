@@ -9,8 +9,8 @@ import {
 
 export interface TokenResponse {
   access_token: string;
-  refresh_token?: string;
   expires_in: number;
+  refresh_token?: string;
   token_type: string;
 }
 
@@ -21,16 +21,16 @@ interface RegistrationResponse {
 
 interface AuthorizationUrlParams {
   clientId: string;
-  redirectUri: string;
   codeChallenge: string;
+  redirectUri: string;
   state: string;
 }
 
 interface ExchangeParams {
   clientId: string;
   code: string;
-  redirectUri: string;
   codeVerifier: string;
+  redirectUri: string;
 }
 
 interface RefreshParams {

@@ -1,0 +1,166 @@
+# Architecture
+
+> **Project**: Memberstack CLI
+> **Repository**: https://github.com/Flash-Brew-Digital/memberstack-cli
+> **Last updated**: 2026-02-17
+
+## Overview
+
+Memberstack CLI is a Node.js command-line tool for managing Memberstack apps, members, plans, data tables, records, and custom fields. It authenticates via OAuth 2.0 (PKCE) and communicates with the Memberstack GraphQL API. Output is rendered as formatted tables by default or raw JSON with `--json`.
+
+## Project Structure
+
+```
+memberstack-cli/
+├── src/
+│   ├── index.ts                # Entry point — banner, command registration, parseAsync
+│   ├── commands/               # One file per command group
+│   │   ├── apps.ts             # App CRUD (current, create, update, delete, restore)
+│   │   ├── auth.ts             # OAuth login, logout, status
+│   │   ├── custom-fields.ts    # Custom field listing
+│   │   ├── members.ts          # Member CRUD, search, pagination
+│   │   ├── plans.ts            # Plan CRUD, ordering, redirects, permissions
+│   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
+│   │   ├── tables.ts           # Data table CRUD, describe
+│   │   └── whoami.ts           # Show current app and user
+│   │
+│   └── lib/                    # Shared utilities
+│       ├── constants.ts        # API URLs, OAuth endpoints, rate limit delay
+│       ├── csv.ts              # CSV/JSON file reading, writing, flattening
+│       ├── graphql-client.ts   # Authenticated GraphQL request wrapper
+│       ├── oauth.ts            # OAuth 2.0 PKCE flow (register, exchange, refresh, revoke)
+│       ├── program.ts          # Commander program instance with global options
+│       ├── token-storage.ts    # Token persistence (~/.memberstack/auth.json)
+│       ├── types.ts            # Shared TypeScript interfaces
+│       └── utils.ts            # Output helpers (printTable, printRecord, printJson, etc.)
+│
+├── tests/
+│   ├── commands/               # Command-level unit tests
+│   │   ├── helpers.ts          # Shared test utilities (runCommand, createMockSpinner)
+│   │   ├── apps.test.ts
+│   │   ├── custom-fields.test.ts
+│   │   ├── members.test.ts
+│   │   ├── plans.test.ts
+│   │   ├── records.test.ts
+│   │   ├── tables.test.ts
+│   │   └── whoami.test.ts
+│   │
+│   └── core/                   # Core library tests
+│       ├── auth.test.ts
+│       ├── graphql-client.test.ts
+│       ├── oauth.test.ts
+│       └── utils.test.ts
+│
+├── dist/                       # Compiled output (ESM)
+├── tsup.config.ts              # Bundler config (esbuild via tsup)
+├── vitest.config.ts            # Test config (mockReset, restoreMocks)
+├── biome.jsonc                 # Linter/formatter (Biome via Ultracite)
+└── package.json                # Node >=20, pnpm, type: module
+```
+
+## Core Components
+
+### Entry Point (`src/index.ts`)
+
+Prints the ASCII banner to stderr, registers all command groups on the shared `program` instance, and calls `parseAsync()`.
+
+### Program (`src/lib/program.ts`)
+
+A shared Commander instance with two global options:
+
+- `--json` — output raw JSON instead of formatted tables
+- `--live` — use live environment instead of sandbox (appended as `?mode=live` or `?mode=sandbox` to the GraphQL URL)
+
+### Commands (`src/commands/`)
+
+Each file exports a Commander `Command` with subcommands. All commands follow the same pattern:
+
+1. Start a `yocto-spinner`
+2. Call `graphqlRequest()` with a query/mutation and variables
+3. Stop the spinner
+4. Output results via `printTable()`, `printRecord()`, or `printSuccess()`
+5. Catch errors and set `process.exitCode = 1`
+
+Repeatable options use a `collect` helper: `(value, previous) => [...previous, value]`.
+
+Boolean toggles use Commander's `--flag` / `--no-flag` pairs.
+
+Update commands validate that at least one option was provided before making the API call.
+
+### GraphQL Client (`src/lib/graphql-client.ts`)
+
+A single `graphqlRequest<T>()` function that:
+
+1. Retrieves a valid access token (refreshing if needed)
+2. Retrieves the app ID from stored tokens
+3. Sends a `POST` to the Memberstack GraphQL API with `Authorization` and `ms-app-id` headers
+4. Handles GraphQL errors (in response body) and HTTP errors separately
+5. Returns typed `data` from the response
+
+### Authentication (`src/lib/oauth.ts` + `src/lib/token-storage.ts`)
+
+OAuth 2.0 Authorization Code flow with PKCE:
+
+1. **Register** — dynamic client registration at `mcp.memberstack.com/oauth/register`
+2. **Authorize** — opens browser to authorization URL with code challenge (S256)
+3. **Exchange** — trades authorization code for access + refresh tokens
+4. **Refresh** — automatically refreshes expired tokens (60s buffer)
+5. **Revoke** — revokes refresh token on logout
+
+Tokens are stored in `~/.memberstack/auth.json` with restrictive file permissions (`0o600`). The app ID is extracted from the JWT access token payload.
+
+### Output Utilities (`src/lib/utils.ts`)
+
+- `printTable()` — renders data as a `cli-table3` table to stderr (or JSON to stdout with `--json`)
+- `printRecord()` — renders a single object as a vertical key-value table
+- `printJson()` — writes raw JSON to stdout
+- `printSuccess()` / `printError()` — colored status messages to stderr
+- `parseKeyValuePairs()` — parses `key=value` strings for `--data` options
+- `parseWhereClause()` — parses `field operator value` filter syntax for `--where`
+- `parseJsonString()` — parses raw JSON strings for `--query`
+
+### CSV/JSON I/O (`src/lib/csv.ts`)
+
+Handles import/export for the `records` command:
+
+- `readInputFile()` — reads CSV (via PapaParse) or JSON files
+- `writeOutputFile()` — writes CSV or JSON with optional object flattening
+- `flattenObject()` / `unflattenObject()` — converts nested data fields to/from dot-notation
+
+## Data Flow
+
+```
+User → Commander (parse args)
+     → Command action handler
+     → graphqlRequest() → token-storage (get/refresh token)
+                        → fetch() → Memberstack GraphQL API
+     → printTable() / printRecord() → stdout/stderr
+```
+
+All user-facing output (tables, spinners, messages) goes to **stderr**. JSON output goes to **stdout**, allowing piping and redirection.
+
+## Dependencies
+
+| Package | Purpose |
+|---|---|
+| `commander` | CLI argument parsing and subcommands |
+| `cli-table3` | Formatted terminal table output |
+| `yocto-spinner` | Loading spinners |
+| `picocolors` | Terminal color output |
+| `open` | Opens browser for OAuth login |
+| `papaparse` | CSV parsing and generation |
+
+Dev: `tsup` (bundler), `typescript`, `vitest` (tests), `biome` via `ultracite` (lint/format).
+
+## Build & CI
+
+- **Build**: `tsup` compiles `src/index.ts` to ESM in `dist/`
+- **Test**: `vitest` with mocked GraphQL client and spinner, covers all commands and core libraries
+- **Lint**: Biome via `ultracite` (`pnpm check` / `pnpm fix`)
+- **Type check**: `tsc --noEmit` (`pnpm type-check`)
+- **PR checks** (`.github/workflows/pr-checks.yml`): type-check, lint, build, test on Node 24
+- **Release** (`.github/workflows/release.yml`): release-please for versioning + npm publish with OIDC provenance
+
+## Published Package
+
+Only `dist/` and `README.md` are included in the npm package (`files` field). The `bin` entry maps `memberstack` to `dist/index.js`.

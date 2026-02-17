@@ -1,0 +1,26 @@
+name: Question
+description: Ask a question about usage or configuration
+labels: ["question"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Before asking, please check the markdown files (e.g. README, ARCHITECTURE, etc.) and existing issues for answers.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: Question
+      description: What would you like to know?
+      placeholder: Describe your question
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context
+      description: Any relevant context about what you're trying to do
+      placeholder: e.g., command you ran, expected outcome, environment details
+    validations:
+      required: false

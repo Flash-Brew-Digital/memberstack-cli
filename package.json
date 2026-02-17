@@ -1,0 +1,82 @@
+{
+  "name": "memberstack-cli",
+  "version": "0.0.0",
+  "description": "Manage your Memberstack account with a simple, yet powerful CLI.",
+  "keywords": [
+    "memberstack",
+    "cli",
+    "command-line",
+    "tool",
+    "members",
+    "plans",
+    "subscriptions",
+    "automation",
+    "webflow"
+  ],
+  "license": "MIT",
+  "author": {
+    "name": "Ben Sabic",
+    "url": "https://bensabic.dev"
+  },
+  "homepage": "https://github.com/Flash-Brew-Digital/memberstack-cli",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Flash-Brew-Digital/memberstack-cli.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Flash-Brew-Digital/memberstack-cli/issues"
+  },
+  "type": "module",
+  "main": "./dist/index.js",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "bin": {
+    "memberstack": "dist/index.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "packageManager": "pnpm@10.29.3",
+  "scripts": {
+    "build": "tsup",
+    "test": "vitest run",
+    "type-check": "tsc --noEmit",
+    "check": "ultracite check",
+    "fix": "ultracite fix",
+    "bump-deps": "npx npm-check-updates -u -p pnpm && pnpm install",
+    "prepublishOnly": "pnpm build"
+  },
+  "dependencies": {
+    "cli-table3": "^0.6.5",
+    "commander": "^14.0.3",
+    "open": "^11.0.0",
+    "papaparse": "^5.5.3",
+    "picocolors": "^1.1.1",
+    "yocto-spinner": "^1.1.0"
+  },
+  "devDependencies": {
+    "@biomejs/biome": "2.4.2",
+    "@types/node": "^25.2.3",
+    "@types/papaparse": "^5.5.2",
+    "lint-staged": "^16.2.7",
+    "tsup": "^8.5.1",
+    "typescript": "^5.9.3",
+    "ultracite": "7.2.3",
+    "vitest": "^4.0.18"
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx,json,jsonc,css,scss,md,mdx}": [
+      "pnpm dlx ultracite fix"
+    ]
+  }
+}

@@ -1,6 +1,6 @@
 {
   "name": "memberstack-cli",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "description": "Manage your Memberstack account with a simple, yet powerful CLI.",
   "keywords": [
     "memberstack",

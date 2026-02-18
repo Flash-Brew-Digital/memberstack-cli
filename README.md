@@ -7,6 +7,8 @@ Manage your Memberstack account from the terminal. Authenticate via OAuth, then 
 
 [View Documentation](https://memberstack-cli.flashbrew.digital)
 
+<img width="1200" height="630" alt="Memberstack, meet your terminal." src="https://github.com/user-attachments/assets/14f8f737-02b4-4b6f-8caf-895e64132c57" />
+
 ## Installation
 
 ```bash

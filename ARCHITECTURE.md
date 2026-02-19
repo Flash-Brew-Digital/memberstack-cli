@@ -21,6 +21,7 @@ memberstack-cli/
 │   │   ├── members.ts          # Member CRUD, search, pagination
 │   │   ├── plans.ts            # Plan CRUD, ordering, redirects, permissions
 │   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
+│   │   ├── skills.ts           # Agent skill add/remove (wraps npx skills)
 │   │   ├── tables.ts           # Data table CRUD, describe
 │   │   └── whoami.ts           # Show current app and user
 │   │
@@ -42,6 +43,7 @@ memberstack-cli/
 │   │   ├── members.test.ts
 │   │   ├── plans.test.ts
 │   │   ├── records.test.ts
+│   │   ├── skills.test.ts
 │   │   ├── tables.test.ts
 │   │   └── whoami.test.ts
 │   │
@@ -73,13 +75,15 @@ A shared Commander instance with two global options:
 
 ### Commands (`src/commands/`)
 
-Each file exports a Commander `Command` with subcommands. All commands follow the same pattern:
+Each file exports a Commander `Command` with subcommands. Most commands follow the same pattern:
 
 1. Start a `yocto-spinner`
 2. Call `graphqlRequest()` with a query/mutation and variables
 3. Stop the spinner
 4. Output results via `printTable()`, `printRecord()`, or `printSuccess()`
 5. Catch errors and set `process.exitCode = 1`
+
+The `skills` command is an exception — it wraps `npx skills` (child process) to add/remove agent skills instead of calling the GraphQL API.
 
 Repeatable options use a `collect` helper: `(value, previous) => [...previous, value]`.
 

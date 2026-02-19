@@ -1,0 +1,41 @@
+README.md
+  1b4565d2b437b28f 34
+src/commands/plans.ts
+  1b4565d2b437b28f 144-145
+src/commands/custom-fields.ts
+  1b4565d2b437b28f 36-37
+src/commands/members.ts
+  1b4565d2b437b28f 198-199
+src/lib/program.ts
+  1b4565d2b437b28f 9-10,15-24
+src/commands/auth.ts
+  1b4565d2b437b28f 114-115
+src/commands/records.ts
+  1b4565d2b437b28f 76-77
+src/commands/tables.ts
+  1b4565d2b437b28f 65-66
+src/commands/skills.ts
+  1b4565d2b437b28f 16-17
+src/commands/apps.ts
+  1b4565d2b437b28f 41-42
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "fc9b42479198ae3c597d169dd0bb8adbaf58327d",
+  "prompts": {
+    "1b4565d2b437b28f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "4ae92411-4212-4a6d-9436-e82ee85238da",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 39,
+      "total_deletions": 24,
+      "accepted_lines": 29,
+      "overriden_lines": 0
+    }
+  }
+}

@@ -32,9 +32,9 @@ const CUSTOM_FIELD_FIELDS = `
   tableOrder
 `;
 
-export const customFieldsCommand = new Command("custom-fields").description(
-  "Manage custom fields"
-);
+export const customFieldsCommand = new Command("custom-fields")
+  .usage("<command> [options]")
+  .description("Manage custom fields");
 
 customFieldsCommand
   .command("list")

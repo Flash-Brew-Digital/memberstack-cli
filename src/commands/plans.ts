@@ -140,7 +140,9 @@ const parseRedirects = (entries: string[]): Record<string, string> => {
   return redirects;
 };
 
-export const plansCommand = new Command("plans").description("Manage plans");
+export const plansCommand = new Command("plans")
+  .usage("<command> [options]")
+  .description("Manage plans");
 
 plansCommand
   .command("list")

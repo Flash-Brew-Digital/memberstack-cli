@@ -194,9 +194,9 @@ const collect = (value: string, previous: string[]): string[] => [
   value,
 ];
 
-export const membersCommand = new Command("members").description(
-  "Manage members"
-);
+export const membersCommand = new Command("members")
+  .usage("<command> [options]")
+  .description("Manage members");
 
 membersCommand
   .command("list")

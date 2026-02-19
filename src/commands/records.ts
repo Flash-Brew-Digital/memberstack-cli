@@ -72,9 +72,9 @@ const resolveTableId = async (tableKey: string): Promise<string> => {
   return result.dataTable.id;
 };
 
-export const recordsCommand = new Command("records").description(
-  "Manage data table records"
-);
+export const recordsCommand = new Command("records")
+  .usage("<command> [options]")
+  .description("Manage data table records");
 
 recordsCommand
   .command("create")

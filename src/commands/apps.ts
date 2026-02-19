@@ -37,7 +37,9 @@ const APP_FIELDS = `
   allowMemberSelfDelete
 `;
 
-export const appsCommand = new Command("apps").description("Manage apps");
+export const appsCommand = new Command("apps")
+  .usage("<command> [options]")
+  .description("Manage apps");
 
 appsCommand
   .command("current")

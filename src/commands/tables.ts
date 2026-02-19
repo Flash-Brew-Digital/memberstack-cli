@@ -61,9 +61,9 @@ const TABLE_FIELDS = `
   }
 `;
 
-export const tablesCommand = new Command("tables").description(
-  "Manage data tables"
-);
+export const tablesCommand = new Command("tables")
+  .usage("<command> [options]")
+  .description("Manage data tables");
 
 tablesCommand
   .command("list")

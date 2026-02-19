@@ -31,7 +31,7 @@ memberstack whoami
 ## Usage
 
 ```bash
-memberstack <command> <subcommand> [options]
+memberstack <command> [subcommand] [params] [options]
 ```
 
 ## Install Agent Skill (Optional)

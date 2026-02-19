@@ -12,9 +12,9 @@ const runSkillsCommand = async (args: string[]): Promise<void> => {
   await execAsync(`npx skills ${args.join(" ")}`);
 };
 
-export const skillsCommand = new Command("skills").description(
-  "Manage Memberstack skills"
-);
+export const skillsCommand = new Command("skills")
+  .usage("<command> [options]")
+  .description("Manage Memberstack skills");
 
 skillsCommand
   .command("add")

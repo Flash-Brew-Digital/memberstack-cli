@@ -110,9 +110,9 @@ const findAvailablePort = (): Promise<number> =>
     server.on("error", reject);
   });
 
-export const authCommand = new Command("auth").description(
-  "Manage OAuth authentication"
-);
+export const authCommand = new Command("auth")
+  .usage("<command> [options]")
+  .description("Manage OAuth authentication");
 
 authCommand
   .command("login")

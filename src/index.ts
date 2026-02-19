@@ -5,6 +5,7 @@ import { customFieldsCommand } from "./commands/custom-fields.js";
 import { membersCommand } from "./commands/members.js";
 import { plansCommand } from "./commands/plans.js";
 import { recordsCommand } from "./commands/records.js";
+import { skillsCommand } from "./commands/skills.js";
 import { tablesCommand } from "./commands/tables.js";
 import { whoamiCommand } from "./commands/whoami.js";
 import { program } from "./lib/program.js";
@@ -54,5 +55,6 @@ program.addCommand(plansCommand);
 program.addCommand(tablesCommand);
 program.addCommand(recordsCommand);
 program.addCommand(customFieldsCommand);
+program.addCommand(skillsCommand);
 
 await program.parseAsync();

@@ -37,7 +37,7 @@ memberstack <command> <subcommand> [options]
 ## Install Agent Skill (Optional)
 
 ```bash
-npx skills add 224-industries/webflow-skills --skill memberstack-cli
+memberstack skills add memberstack-cli
 ```
 
 ### Global Options
@@ -135,6 +135,13 @@ Show the current authenticated app and user.
 | `create` | Create a custom field |
 | `update <id>` | Update a custom field |
 | `delete <id>` | Delete a custom field |
+
+#### `skills` — Agent Skill Management
+
+| Subcommand | Description |
+|---|---|
+| `add <skill>` | Add a Memberstack agent skill |
+| `remove <skill>` | Remove a Memberstack agent skill |
 
 ## Examples
 

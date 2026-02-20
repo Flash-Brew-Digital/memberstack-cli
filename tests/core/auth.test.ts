@@ -22,6 +22,20 @@ vi.mock("../../src/lib/oauth.js", () => ({
   revokeToken: (...args: unknown[]) => revokeToken(...args),
 }));
 vi.mock("open", () => ({ default: vi.fn() }));
+vi.mock("yocto-spinner", () => {
+  const spinner: Record<string, unknown> = { text: "" };
+  spinner.start = vi.fn(() => spinner);
+  spinner.stop = vi.fn(() => spinner);
+  return { default: () => spinner };
+});
+vi.mock("../../src/lib/program.js", () => ({
+  program: { opts: () => ({}) },
+}));
+
+const graphqlRequest = vi.fn();
+vi.mock("../../src/lib/graphql-client.js", () => ({
+  graphqlRequest: (...args: unknown[]) => graphqlRequest(...args),
+}));
 
 const { authCommand } = await import("../../src/commands/auth.js");
 
@@ -102,6 +116,67 @@ describe("auth", () => {
       await runCommand(authCommand, ["status"]);
 
       expect(loadTokens).toHaveBeenCalled();
+    });
+  });
+
+  describe("update-profile", () => {
+    it("sends first name and last name", async () => {
+      graphqlRequest.mockResolvedValueOnce({
+        updateUserProfile: {
+          id: "usr_1",
+          auth: { email: "test@example.com" },
+          profile: { firstName: "Ben", lastName: "Sabic" },
+        },
+      });
+
+      await runCommand(authCommand, [
+        "update-profile",
+        "--first-name",
+        "Ben",
+        "--last-name",
+        "Sabic",
+      ]);
+
+      const call = graphqlRequest.mock.calls[0][0];
+      expect(call.variables.input).toEqual({
+        firstName: "Ben",
+        lastName: "Sabic",
+      });
+    });
+
+    it("sends email only", async () => {
+      graphqlRequest.mockResolvedValueOnce({
+        updateUserProfile: {
+          id: "usr_1",
+          auth: { email: "new@example.com" },
+          profile: { firstName: "Ben", lastName: "Sabic" },
+        },
+      });
+
+      await runCommand(authCommand, [
+        "update-profile",
+        "--email",
+        "new@example.com",
+      ]);
+
+      const call = graphqlRequest.mock.calls[0][0];
+      expect(call.variables.input).toEqual({ email: "new@example.com" });
+    });
+
+    it("rejects with no options", async () => {
+      const original = process.exitCode;
+      await runCommand(authCommand, ["update-profile"]);
+      expect(process.exitCode).toBe(1);
+      process.exitCode = original;
+    });
+
+    it("handles errors gracefully", async () => {
+      graphqlRequest.mockRejectedValueOnce(new Error("Unauthorized"));
+
+      const original = process.exitCode;
+      await runCommand(authCommand, ["update-profile", "--first-name", "Test"]);
+      expect(process.exitCode).toBe(1);
+      process.exitCode = original;
     });
   });
 });

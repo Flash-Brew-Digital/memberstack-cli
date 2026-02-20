@@ -2,7 +2,9 @@ import { createServer } from "node:http";
 import { Command } from "commander";
 import open from "open";
 import pc from "picocolors";
+import yoctoSpinner from "yocto-spinner";
 import { OAUTH_CALLBACK_PATH } from "../lib/constants.js";
+import { graphqlRequest } from "../lib/graphql-client.js";
 import {
   buildAuthorizationUrl,
   exchangeCodeForTokens,
@@ -18,7 +20,7 @@ import {
   loadTokens,
   saveTokens,
 } from "../lib/token-storage.js";
-import { printError, printSuccess } from "../lib/utils.js";
+import { printError, printRecord, printSuccess } from "../lib/utils.js";
 
 const SUCCESS_HTML = `<!DOCTYPE html>
 <html>
@@ -264,3 +266,66 @@ authCommand
       process.exitCode = 1;
     }
   });
+
+authCommand
+  .command("update-profile")
+  .description("Update your profile (first name, last name, email)")
+  .option("--first-name <name>", "First name")
+  .option("--last-name <name>", "Last name")
+  .option("--email <email>", "Email address")
+  .action(
+    async (opts: { firstName?: string; lastName?: string; email?: string }) => {
+      const input: Record<string, string> = {};
+      if (opts.firstName) {
+        input.firstName = opts.firstName;
+      }
+      if (opts.lastName) {
+        input.lastName = opts.lastName;
+      }
+      if (opts.email) {
+        input.email = opts.email;
+      }
+
+      if (Object.keys(input).length === 0) {
+        printError(
+          "No update options provided. Use --help to see available options."
+        );
+        process.exitCode = 1;
+        return;
+      }
+
+      const spinner = yoctoSpinner({ text: "Updating profile..." }).start();
+      try {
+        const result = await graphqlRequest<{
+          updateUserProfile: {
+            id: string;
+            auth: { email: string };
+            profile: { firstName: string | null; lastName: string | null };
+          };
+        }>({
+          query: `mutation($input: UpdateUserProfileInput!) {
+  updateUserProfile(input: $input) {
+    id
+    auth { email }
+    profile { firstName lastName }
+  }
+}`,
+          variables: { input },
+        });
+        spinner.stop();
+        const { updateUserProfile: user } = result;
+        printSuccess("Profile updated successfully.");
+        printRecord({
+          email: user.auth.email,
+          firstName: user.profile.firstName ?? "",
+          lastName: user.profile.lastName ?? "",
+        });
+      } catch (error) {
+        spinner.stop();
+        printError(
+          error instanceof Error ? error.message : "An unknown error occurred"
+        );
+        process.exitCode = 1;
+      }
+    }
+  );

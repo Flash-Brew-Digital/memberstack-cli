@@ -1,0 +1,45 @@
+tests/core/quiet.test.ts
+  ba605bd9b248a468 1-28
+tests/core/graphql-client.test.ts
+  ba605bd9b248a468 8
+tests/core/no-color.test.ts
+  ba605bd9b248a468 1-64
+tests/commands/helpers.ts
+  ba605bd9b248a468 5,14
+src/lib/program.ts
+  ba605bd9b248a468 1,13-24,26,28-32,34-47
+src/lib/utils.ts
+  ba605bd9b248a468 5-7,39-40,53,65-67
+tests/core/program-options.test.ts
+  ba605bd9b248a468 1-147
+package.json
+  ba605bd9b248a468 52
+README.md
+  ba605bd9b248a468 45-48,50-52,56,58-68,89,99-101
+ARCHITECTURE.md
+  ba605bd9b248a468 53,55-56,70,76-80,127,163
+src/index.ts
+  ba605bd9b248a468 1-4,52,54,56
+src/lib/graphql-client.ts
+  ba605bd9b248a468 38
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "d4c24659e8606dee9ac12ed5e52e9b10f7b91917",
+  "prompts": {
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 393,
+      "total_deletions": 168,
+      "accepted_lines": 327,
+      "overriden_lines": 1
+    }
+  }
+}

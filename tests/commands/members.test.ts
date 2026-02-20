@@ -160,6 +160,51 @@ describe("members", () => {
     );
   });
 
+  it("update sends custom fields and meta data", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateMember: mockMember });
+
+    await runCommand(membersCommand, [
+      "update",
+      "mem_1",
+      "--meta-data",
+      "source=cli",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.memberId).toBe("mem_1");
+    expect(call.variables.input.metaData).toEqual({ source: "cli" });
+  });
+
+  it("update sends --json-data as parsed JSON", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateMember: mockMember });
+
+    await runCommand(membersCommand, [
+      "update",
+      "mem_1",
+      "--json-data",
+      '{"key":"value"}',
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.memberId).toBe("mem_1");
+    expect(call.variables.input.json).toEqual({ key: "value" });
+  });
+
+  it("update accepts --json-data alongside global --json without conflict", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateMember: mockMember });
+
+    await runCommand(membersCommand, [
+      "update",
+      "mem_1",
+      "--json-data",
+      '{"key":"value"}',
+      "--json",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.json).toEqual({ key: "value" });
+  });
+
   it("handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Unauthorized"));
 

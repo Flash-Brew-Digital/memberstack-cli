@@ -152,7 +152,7 @@ export interface MembersCreateOptions {
 export interface MembersUpdateOptions {
   customFields?: string[];
   email?: string;
-  json?: string;
+  jsonData?: string;
   loginRedirect?: string;
   metaData?: string[];
 }

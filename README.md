@@ -63,6 +63,7 @@ memberstack skills add memberstack-cli
 | `tables` | List, create, update, delete, and describe schema |
 | `records` | CRUD, query, import/export, bulk ops |
 | `custom-fields` | List, create, update, and delete custom fields |
+| `users` | List, get, add, remove, and update roles for app users |
 | `skills` | Add/remove agent skills for Claude Code and Codex |
 
 For full command details and usage, see the [Command Reference](https://memberstack-cli.flashbrew.digital/docs/commands).

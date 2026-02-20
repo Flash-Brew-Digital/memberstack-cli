@@ -23,6 +23,7 @@ memberstack-cli/
 │   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
 │   │   ├── skills.ts           # Agent skill add/remove (wraps npx skills)
 │   │   ├── tables.ts           # Data table CRUD, describe
+│   │   ├── users.ts            # App user management (list, get, add, remove, update-role)
 │   │   └── whoami.ts           # Show current app and user
 │   │
 │   └── lib/                    # Shared utilities
@@ -45,6 +46,7 @@ memberstack-cli/
 │   │   ├── records.test.ts
 │   │   ├── skills.test.ts
 │   │   ├── tables.test.ts
+│   │   ├── users.test.ts
 │   │   └── whoami.test.ts
 │   │
 │   └── core/                   # Core library tests

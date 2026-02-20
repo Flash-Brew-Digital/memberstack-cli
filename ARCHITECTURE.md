@@ -50,7 +50,10 @@ memberstack-cli/
 │   └── core/                   # Core library tests
 │       ├── auth.test.ts
 │       ├── graphql-client.test.ts
+│       ├── no-color.test.ts
 │       ├── oauth.test.ts
+│       ├── program-options.test.ts
+│       ├── quiet.test.ts
 │       └── utils.test.ts
 │
 ├── dist/                       # Compiled output (ESM)
@@ -64,14 +67,17 @@ memberstack-cli/
 
 ### Entry Point (`src/index.ts`)
 
-Prints the ASCII banner to stderr, registers all command groups on the shared `program` instance, and calls `parseAsync()`.
+Propagates `--no-color` / `NO_COLOR` to all color libraries before imports, conditionally prints the ASCII banner (suppressed by `--quiet`), registers all command groups on the shared `program` instance, and calls `parseAsync()`.
 
 ### Program (`src/lib/program.ts`)
 
-A shared Commander instance with two global options:
+A shared Commander instance with global options:
 
-- `--json` — output raw JSON instead of formatted tables
-- `--live` — use live environment instead of sandbox (appended as `?mode=live` or `?mode=sandbox` to the GraphQL URL)
+- `-j, --json` — output raw JSON instead of formatted tables (env: `MEMBERSTACK_JSON`)
+- `-q, --quiet` — suppress banner and non-essential output
+- `--no-color` — disable color output (respects the `NO_COLOR` standard)
+- `--mode <mode>` — set environment mode: `sandbox` (default) or `live` (env: `MEMBERSTACK_MODE`)
+- `--live` / `--sandbox` — shorthands for `--mode live` and `--mode sandbox`
 
 ### Commands (`src/commands/`)
 
@@ -118,7 +124,7 @@ Tokens are stored in `~/.memberstack/auth.json` with restrictive file permission
 - `printTable()` — renders data as a `cli-table3` table to stderr (or JSON to stdout with `--json`)
 - `printRecord()` — renders a single object as a vertical key-value table
 - `printJson()` — writes raw JSON to stdout
-- `printSuccess()` / `printError()` — colored status messages to stderr
+- `printSuccess()` / `printError()` — colored status messages to stderr (`printSuccess` is suppressed by `--quiet`)
 - `parseKeyValuePairs()` — parses `key=value` strings for `--data` options
 - `parseWhereClause()` — parses `field operator value` filter syntax for `--where`
 - `parseJsonString()` — parses raw JSON strings for `--query`
@@ -154,7 +160,7 @@ All user-facing output (tables, spinners, messages) goes to **stderr**. JSON out
 | `open` | Opens browser for OAuth login |
 | `papaparse` | CSV parsing and generation |
 
-Dev: `tsup` (bundler), `typescript`, `vitest` (tests), `biome` via `ultracite` (lint/format).
+Dev: `tsup` (bundler), `tsx` (dev runner), `typescript`, `vitest` (tests), `biome` via `ultracite` (lint/format).
 
 ## Build & CI
 

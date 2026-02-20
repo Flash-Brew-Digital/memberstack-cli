@@ -2,6 +2,9 @@ import Table from "cli-table3";
 import pc from "picocolors";
 import { program } from "./program.js";
 
+const plainStyle = { head: [], border: [] };
+const tableOptions = pc.isColorSupported ? {} : { style: plainStyle };
+
 export const printJson = (data: unknown): void => {
   const json = JSON.stringify(data, null, 2);
   process.stdout.write(`${json}\n`);
@@ -32,7 +35,10 @@ export const printTable = (rows: object[]): void => {
   }
   const entries = rows as Record<string, unknown>[];
   const headers = [...new Set(entries.flatMap(Object.keys))];
-  const table = new Table({ head: headers.map((h) => pc.cyan(h)) });
+  const table = new Table({
+    ...tableOptions,
+    head: headers.map((h) => pc.cyan(h)),
+  });
   for (const row of entries) {
     table.push(headers.map((h) => formatCellValue(row[h])));
   }
@@ -44,7 +50,7 @@ export const printRecord = (obj: object): void => {
     printJson(obj);
     return;
   }
-  const table = new Table();
+  const table = new Table(tableOptions);
   for (const [key, value] of Object.entries(obj)) {
     table.push({ [pc.cyan(key)]: formatCellValue(value) });
   }
@@ -56,6 +62,9 @@ export const printError = (message: string): void => {
 };
 
 export const printSuccess = (message: string): void => {
+  if (program.opts().quiet) {
+    return;
+  }
   process.stderr.write(`${pc.green(message)}\n`);
 };
 

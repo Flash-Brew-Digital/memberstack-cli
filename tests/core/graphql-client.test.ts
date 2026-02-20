@@ -5,7 +5,7 @@ vi.mock("../../src/lib/constants.js", () => ({
 }));
 
 vi.mock("../../src/lib/program.js", () => ({
-  program: { opts: () => ({}) },
+  program: { opts: () => ({ mode: "sandbox" }) },
 }));
 
 const getValidAccessToken = vi.fn();

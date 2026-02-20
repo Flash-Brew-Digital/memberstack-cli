@@ -2,7 +2,7 @@ import { Command } from "commander";
 import { vi } from "vitest";
 
 /**
- * Creates a fresh parent program with --json and --live flags,
+ * Creates a fresh parent program with --json and --mode flags,
  * adds the given command, and parses the provided args.
  */
 export const runCommand = async (
@@ -11,7 +11,7 @@ export const runCommand = async (
 ): Promise<void> => {
   const program = new Command();
   program.option("--json", "Output as JSON");
-  program.option("--live", "Use live mode");
+  program.option("--mode <mode>", "Set environment mode", "sandbox");
   program.exitOverride();
   program.addCommand(command);
   await program.parseAsync(["node", "test", command.name(), ...args]);

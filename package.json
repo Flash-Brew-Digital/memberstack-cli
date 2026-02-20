@@ -49,6 +49,7 @@
   "packageManager": "pnpm@10.29.3",
   "scripts": {
     "build": "tsup",
+    "dev": "tsx src/index.ts",
     "test": "vitest run",
     "type-check": "tsc --noEmit",
     "check": "ultracite check",
@@ -70,6 +71,7 @@
     "@types/papaparse": "^5.5.2",
     "lint-staged": "^16.2.7",
     "tsup": "^8.5.1",
+    "tsx": "^4.21.0",
     "typescript": "^5.9.3",
     "ultracite": "7.2.3",
     "vitest": "^4.0.18"

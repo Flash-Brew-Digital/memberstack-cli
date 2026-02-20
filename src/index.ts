@@ -1,3 +1,7 @@
+if (process.argv.includes("--no-color") || process.env.NO_COLOR) {
+  process.env.NO_COLOR = "1";
+}
+
 import pc from "picocolors";
 import { appsCommand } from "./commands/apps.js";
 import { authCommand } from "./commands/auth.js";
@@ -45,8 +49,11 @@ const banner = [
   "",
 ].join("\n");
 
-process.stderr.write(`${banner}\n`);
+if (!(process.argv.includes("--quiet") || process.argv.includes("-q"))) {
+  process.stderr.write(`${banner}\n`);
+}
 
+program.action(() => program.help());
 program.addCommand(appsCommand);
 program.addCommand(authCommand);
 program.addCommand(whoamiCommand);

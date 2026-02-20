@@ -42,106 +42,30 @@ memberstack skills add memberstack-cli
 
 ### Global Options
 
-| Option | Description |
-|---|---|
-| `--json` | Output raw JSON instead of formatted tables |
-| `--live` | Use live environment instead of sandbox |
+| Option | Env Var | Description |
+|---|---|---|
+| `-j, --json` | `MEMBERSTACK_JSON` | Output raw JSON instead of formatted tables |
+| `-q, --quiet` | | Suppress banner and non-essential output |
+| `--no-color` | `NO_COLOR` | Disable color output (respects the [NO_COLOR standard](https://no-color.org)) |
+| `--mode <mode>` | `MEMBERSTACK_MODE` | Set environment mode (`sandbox` or `live`, default: `sandbox`) |
+| `--live` | | Shorthand for `--mode live` |
+| `--sandbox` | | Shorthand for `--mode sandbox` |
 
 ### Commands
 
-#### `auth` — Authentication
-
-| Subcommand | Description |
+| Command | Functionality |
 |---|---|
-| `login` | Authenticate with Memberstack via OAuth |
-| `logout` | Remove stored authentication tokens |
-| `status` | Show current authentication status |
+| `auth` | Login, logout, and check authentication status |
+| `whoami` | Show current authenticated app and user |
+| `apps` | View, create, update, delete, and restore apps |
+| `members` | List, create, update, delete, import/export, bulk ops |
+| `plans` | List, create, update, delete, and reorder plans |
+| `tables` | List, create, update, delete, and describe schema |
+| `records` | CRUD, query, import/export, bulk ops |
+| `custom-fields` | List, create, update, and delete custom fields |
+| `skills` | Add/remove agent skills for Claude Code and Codex |
 
-#### `whoami` — Identity
-
-Show the current authenticated app and user.
-
-#### `apps` — App Management
-
-| Subcommand | Description |
-|---|---|
-| `current` | Show the current app |
-| `create` | Create a new app |
-| `update` | Update the current app |
-| `delete` | Delete an app |
-| `restore` | Restore a deleted app |
-
-#### `members` — Member Management
-
-| Subcommand | Description |
-|---|---|
-| `list` | List members (with pagination) |
-| `get <id_or_email>` | Get a member by ID or email |
-| `create` | Create a new member |
-| `update <id>` | Update a member |
-| `delete <id>` | Delete a member |
-| `add-plan <id>` | Add a free plan to a member |
-| `remove-plan <id>` | Remove a free plan from a member |
-| `count` | Show total member count |
-| `find` | Find members by field values or plan |
-| `stats` | Show member statistics |
-| `export` | Export all members to CSV or JSON |
-| `import` | Import members from a CSV or JSON file |
-| `bulk-update` | Bulk update members from a file |
-| `bulk-add-plan` | Add a plan to multiple members |
-
-#### `plans` — Plan Management
-
-| Subcommand | Description |
-|---|---|
-| `list` | List all plans |
-| `get <id>` | Get a plan by ID |
-| `create` | Create a new plan |
-| `update <id>` | Update a plan (name, status, redirects, permissions, etc.) |
-| `delete <id>` | Delete a plan |
-| `order` | Reorder plans by priority |
-
-#### `tables` — Data Table Management
-
-| Subcommand | Description |
-|---|---|
-| `list` | List all data tables |
-| `get <table_key>` | Get a data table by key or ID |
-| `describe <table_key>` | Show table schema and access rules |
-| `create` | Create a new data table |
-| `update <id>` | Update a data table |
-| `delete <id>` | Delete a data table |
-
-#### `records` — Record Management
-
-| Subcommand | Description |
-|---|---|
-| `create <table_key>` | Create a new record |
-| `update <table_key> <record_id>` | Update a record |
-| `delete <table_key> <record_id>` | Delete a record |
-| `query <table_key>` | Query records with a JSON filter |
-| `count <table_key>` | Count records in a table |
-| `find <table_key>` | Find records with friendly filter syntax |
-| `export <table_key>` | Export all records to CSV or JSON |
-| `import <table_key>` | Import records from a CSV or JSON file |
-| `bulk-update` | Bulk update records from a file |
-| `bulk-delete <table_key>` | Bulk delete records matching a filter |
-
-#### `custom-fields` — Custom Field Management
-
-| Subcommand | Description |
-|---|---|
-| `list` | List all custom fields |
-| `create` | Create a custom field |
-| `update <id>` | Update a custom field |
-| `delete <id>` | Delete a custom field |
-
-#### `skills` — Agent Skill Management
-
-| Subcommand | Description |
-|---|---|
-| `add <skill>` | Add a Memberstack agent skill |
-| `remove <skill>` | Remove a Memberstack agent skill |
+For full command details and usage, see the [Command Reference](https://memberstack-cli.flashbrew.digital/docs/commands).
 
 ## Examples
 
@@ -162,6 +86,7 @@ memberstack members export --format csv --output members.csv
 memberstack records import my_table --file data.json
 
 # Use live environment
+memberstack members list --mode live
 memberstack members list --live
 ```
 
@@ -170,6 +95,9 @@ memberstack members list --live
 ```bash
 # Install dependencies
 pnpm install
+
+# Run locally (via tsx, no build needed)
+pnpm dev -- members list --json
 
 # Build
 pnpm build

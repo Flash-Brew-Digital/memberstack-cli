@@ -6,6 +6,7 @@ This file provides guidance to AI agents when working with code in this reposito
 
 ```bash
 pnpm build            # Build CLI with tsup (output: dist/)
+pnpm dev              # Run CLI from source via tsx (e.g. pnpm dev -- members list)
 pnpm test             # Run all tests with vitest
 pnpm check            # Lint and format check (Biome via ultracite)
 pnpm fix              # Auto-fix lint and format issues
@@ -42,3 +43,4 @@ Write code that is **accessible, performant, type-safe, and maintainable**. Focu
 
 [ARCHITECTURE.md](./ARCHITECTURE.md): Detailed Project Architecture
 [CONTRIBUTING.md](.github/CONTRIBUTING.md): Project Contribution Guidelines
+[Memberstack CLI Documentation](https://memberstack-cli.flashbrew.digital/llms.txt): Memberstack CLI Documentation

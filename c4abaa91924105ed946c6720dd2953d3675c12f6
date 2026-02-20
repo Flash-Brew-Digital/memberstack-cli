@@ -1,0 +1,25 @@
+tests/core/auth.test.ts
+  ba605bd9b248a468 25-38,121-176,178-181
+src/commands/auth.ts
+  ba605bd9b248a468 5,7,23,269-276,278-331
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "c4abaa91924105ed946c6720dd2953d3675c12f6",
+  "prompts": {
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 149,
+      "total_deletions": 1,
+      "accepted_lines": 139,
+      "overriden_lines": 2
+    }
+  }
+}

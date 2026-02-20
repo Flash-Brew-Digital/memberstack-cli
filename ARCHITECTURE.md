@@ -20,6 +20,7 @@ memberstack-cli/
 │   │   ├── custom-fields.ts    # Custom field listing
 │   │   ├── members.ts          # Member CRUD, search, pagination
 │   │   ├── plans.ts            # Plan CRUD, ordering, redirects, permissions
+│   │   ├── prices.ts           # Price management (create, update, activate, deactivate, delete)
 │   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
 │   │   ├── skills.ts           # Agent skill add/remove (wraps npx skills)
 │   │   ├── tables.ts           # Data table CRUD, describe
@@ -43,6 +44,7 @@ memberstack-cli/
 │   │   ├── custom-fields.test.ts
 │   │   ├── members.test.ts
 │   │   ├── plans.test.ts
+│   │   ├── prices.test.ts
 │   │   ├── records.test.ts
 │   │   ├── skills.test.ts
 │   │   ├── tables.test.ts

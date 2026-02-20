@@ -60,6 +60,7 @@ memberstack skills add memberstack-cli
 | `apps` | View, create, update, delete, and restore apps |
 | `members` | List, create, update, delete, import/export, bulk ops |
 | `plans` | List, create, update, delete, and reorder plans |
+| `prices` | Create, update, activate, deactivate, and delete prices |
 | `tables` | List, create, update, delete, and describe schema |
 | `records` | CRUD, query, import/export, bulk ops |
 | `custom-fields` | List, create, update, and delete custom fields |

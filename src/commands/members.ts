@@ -62,7 +62,6 @@ const printMemberPreview = (member: Member): void => {
 
 const fetchAllMembers = async (
   spinner: ReturnType<typeof yoctoSpinner>,
-  order = "ASC",
   filters?: Record<string, unknown>
 ): Promise<{ members: Member[]; totalCount: number }> => {
   const allMembers: Member[] = [];
@@ -74,22 +73,24 @@ const fetchAllMembers = async (
   do {
     const result = await graphqlRequest<{
       getMembers: {
-        edges: { cursor: string; node: Member }[];
+        edges: { node: Member }[];
+        pageInfo: { endCursor: string | null };
       };
     }>({
-      query: `query($first: Int, $after: String, $order: OrderByInput, $filters: MemberFilter) {
-        getMembers(first: $first, after: $after, order: $order, filters: $filters) {
-          edges { cursor node { ${MEMBER_FIELDS} } }
+      query: `query($first: Int, $after: String, $filters: MemberFilter) {
+        getMembers(first: $first, after: $after, filters: $filters) {
+          edges { node { ${MEMBER_FIELDS} } }
+          pageInfo { endCursor }
         }
       }`,
-      variables: { first: pageSize, after: cursor, order, filters },
+      variables: { first: pageSize, after: cursor, filters },
     });
 
-    const { edges } = result.getMembers;
+    const { edges, pageInfo } = result.getMembers;
     allMembers.push(...edges.map((e) => e.node));
 
-    if (edges.length === pageSize) {
-      cursor = edges.at(-1)?.cursor;
+    if (edges.length === pageSize && pageInfo.endCursor) {
+      cursor = pageInfo.endCursor;
       spinner.text = `Fetching members... (${allMembers.length} so far)`;
     } else {
       cursor = undefined;
@@ -107,8 +108,12 @@ const flattenMember = (member: Member): Record<string, unknown> => ({
   createdAt: member.createdAt,
   lastLogin: member.lastLogin ?? "",
   loginRedirect: member.loginRedirect ?? "",
-  permissions: member.permissions.all.join(", "),
-  plans: member.planConnections.map((p) => p.plan.id).join(", "),
+  permissions: member.permissions?.all?.join(", ") ?? "",
+  plans:
+    member.planConnections
+      ?.map((p) => p.plan?.id)
+      .filter(Boolean)
+      .join(", ") ?? "",
   ...Object.fromEntries(
     Object.entries(member.customFields ?? {}).map(([k, v]) => [
       `customFields.${k}`,
@@ -205,7 +210,7 @@ membersCommand
     "--after <cursor>",
     "Pagination cursor (endCursor from previous page)"
   )
-  .option("--order <order>", "Sort order (ASC or DESC)", "ASC")
+  .option("--order <order>", "Sort order (ASC or DESC)")
   .option("--limit <number>", "Max members to return (default: 50, max: 200)")
   .option("--all", "Auto-paginate and fetch all members")
   .action(async (options: MembersListOptions) => {
@@ -223,28 +228,38 @@ membersCommand
 
         const result = await graphqlRequest<{
           getMembers: {
-            edges: { cursor: string; node: Member }[];
+            edges: { node: Member }[];
+            pageInfo: { endCursor: string | null };
           };
         }>({
-          query: `query($first: Int, $after: String, $order: OrderByInput) {
-            getMembers(first: $first, after: $after, order: $order) {
-              edges { cursor node { ${MEMBER_FIELDS} } }
+          query: `query($first: Int, $after: String) {
+            getMembers(first: $first, after: $after) {
+              edges { node { ${MEMBER_FIELDS} } }
+              pageInfo { endCursor }
             }
           }`,
-          variables: { first: perPage, after: cursor, order: options.order },
+          variables: { first: perPage, after: cursor },
         });
 
-        const { edges } = result.getMembers;
+        const { edges, pageInfo } = result.getMembers;
         const members = edges.map((e) => e.node);
         allMembers.push(...members);
 
-        if (allMembers.length < target && edges.length === perPage) {
-          cursor = edges.at(-1)?.cursor;
+        if (
+          allMembers.length < target &&
+          edges.length === perPage &&
+          pageInfo.endCursor
+        ) {
+          cursor = pageInfo.endCursor;
           spinner.text = `Fetching members... (${allMembers.length} so far)`;
         } else {
           cursor = undefined;
         }
       } while (cursor);
+
+      if (options.order === "DESC") {
+        allMembers.reverse();
+      }
 
       spinner.stop();
 
@@ -279,11 +294,16 @@ membersCommand
     const spinner = yoctoSpinner({ text: "Fetching member..." }).start();
     try {
       if (idOrEmail.startsWith("mem_")) {
-        const result = await graphqlRequest<{ currentMember: Member }>({
+        const result = await graphqlRequest<{
+          currentMember: Member | null;
+        }>({
           query: `query($id: ID) { currentMember(id: $id) { ${MEMBER_FIELDS} } }`,
           variables: { id: idOrEmail },
         });
         spinner.stop();
+        if (!result.currentMember) {
+          throw new Error(`Member not found: ${idOrEmail}`);
+        }
         printRecord(result.currentMember);
       } else {
         const result = await graphqlRequest<{
@@ -418,6 +438,11 @@ membersCommand
       if (member) {
         printSuccess(`Member updated: ${member.id}`);
         printRecord(member);
+      } else {
+        printError(
+          "No update options provided. Use --help to see available options."
+        );
+        process.exitCode = 1;
       }
     } catch (error) {
       spinner.stop();
@@ -627,7 +652,7 @@ membersCommand
       let members: Member[];
 
       if (hasPlanFilter && !hasFieldFilter) {
-        const { members: fetched } = await fetchAllMembers(spinner, "ASC", {
+        const { members: fetched } = await fetchAllMembers(spinner, {
           planIds: [options.plan],
         });
         members = fetched;
@@ -692,8 +717,10 @@ membersCommand
           inactive++;
         }
 
-        for (const conn of member.planConnections) {
-          planCounts[conn.plan.id] = (planCounts[conn.plan.id] ?? 0) + 1;
+        for (const conn of member.planConnections ?? []) {
+          if (conn.plan?.id) {
+            planCounts[conn.plan.id] = (planCounts[conn.plan.id] ?? 0) + 1;
+          }
         }
 
         const created = new Date(member.createdAt).getTime();

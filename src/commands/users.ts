@@ -50,22 +50,24 @@ usersCommand
       do {
         const result = await graphqlRequest<{
           getUsers: {
-            edges: { cursor: string; node: AppUser }[];
+            edges: { node: AppUser }[];
+            pageInfo: { endCursor: string | null };
           };
         }>({
           query: `query($first: Int, $after: String) {
   getUsers(first: $first, after: $after) {
-    edges { cursor node { ${USER_FIELDS} } }
+    edges { node { ${USER_FIELDS} } }
+    pageInfo { endCursor }
   }
 }`,
           variables: { first: pageSize, after: cursor },
         });
 
-        const { edges } = result.getUsers;
+        const { edges, pageInfo } = result.getUsers;
         allUsers.push(...edges.map((e) => e.node));
 
-        if (edges.length === pageSize) {
-          cursor = edges.at(-1)?.cursor;
+        if (edges.length === pageSize && pageInfo.endCursor) {
+          cursor = pageInfo.endCursor;
           spinner.text = `Fetching users... (${allUsers.length} so far)`;
         } else {
           cursor = undefined;
@@ -97,24 +99,41 @@ usersCommand
   .action(async (idOrEmail: string) => {
     const spinner = yoctoSpinner({ text: "Fetching users..." }).start();
     try {
-      const result = await graphqlRequest<{
-        getUsers: {
-          edges: { cursor: string; node: AppUser }[];
-        };
-      }>({
-        query: `query {
-  getUsers {
+      const allUsers: AppUser[] = [];
+      let getCursor: string | undefined;
+      const getPageSize = 200;
+
+      do {
+        const result = await graphqlRequest<{
+          getUsers: {
+            edges: { node: AppUser }[];
+            pageInfo: { endCursor: string | null };
+          };
+        }>({
+          query: `query($first: Int, $after: String) {
+  getUsers(first: $first, after: $after) {
     edges { node { ${USER_FIELDS} } }
+    pageInfo { endCursor }
   }
 }`,
-      });
+          variables: { first: getPageSize, after: getCursor },
+        });
+
+        const { edges, pageInfo } = result.getUsers;
+        allUsers.push(...edges.map((e) => e.node));
+
+        if (edges.length === getPageSize && pageInfo.endCursor) {
+          getCursor = pageInfo.endCursor;
+        } else {
+          getCursor = undefined;
+        }
+      } while (getCursor);
+
       spinner.stop();
 
       const isEmail = idOrEmail.includes("@");
-      const match = result.getUsers.edges.find((e) =>
-        isEmail
-          ? e.node.user.auth.email === idOrEmail
-          : e.node.user.id === idOrEmail
+      const match = allUsers.find((u) =>
+        isEmail ? u.user.auth.email === idOrEmail : u.user.id === idOrEmail
       );
 
       if (!match) {
@@ -124,11 +143,11 @@ usersCommand
       }
 
       printRecord({
-        id: match.node.user.id,
-        email: match.node.user.auth.email,
-        firstName: match.node.user.profile.firstName ?? "",
-        lastName: match.node.user.profile.lastName ?? "",
-        role: match.node.role,
+        id: match.user.id,
+        email: match.user.auth.email,
+        firstName: match.user.profile.firstName ?? "",
+        lastName: match.user.profile.lastName ?? "",
+        role: match.role,
       });
     } catch (error) {
       spinner.stop();

@@ -64,6 +64,49 @@ const extractDataFields = (
   return data;
 };
 
+const fetchAllRecords = async (
+  spinner: ReturnType<typeof yoctoSpinner>,
+  tableId: string,
+  filter?: Record<string, unknown>
+): Promise<DataRecord[]> => {
+  const allRecords: DataRecord[] = [];
+  let cursor: string | undefined;
+  const pageSize = 100;
+
+  do {
+    const result = await graphqlRequest<{
+      dataRecords: {
+        edges: { node: DataRecord }[];
+        pageInfo: { endCursor: string | null };
+      };
+    }>({
+      query: `query($tableId: ID!, $filter: DataRecordsFilterInput, $pagination: DataRecordsPaginationInput) {
+  dataRecords(tableId: $tableId, filter: $filter, pagination: $pagination) {
+    edges { node { ${DATA_RECORD_FIELDS} } }
+    pageInfo { endCursor }
+  }
+}`,
+      variables: {
+        tableId,
+        filter,
+        pagination: { first: pageSize, after: cursor },
+      },
+    });
+
+    const { edges, pageInfo } = result.dataRecords;
+    allRecords.push(...edges.map((e) => e.node));
+
+    if (edges.length === pageSize && pageInfo.endCursor) {
+      cursor = pageInfo.endCursor;
+      spinner.text = `Fetching records... (${allRecords.length} so far)`;
+    } else {
+      cursor = undefined;
+    }
+  } while (cursor);
+
+  return allRecords;
+};
+
 const resolveTableId = async (tableKey: string): Promise<string> => {
   const result = await graphqlRequest<{ dataTable: { id: string } }>({
     query: "query($key: String!) { dataTable(key: $key) { id } }",
@@ -273,7 +316,7 @@ recordsCommand
         createdAt: e.node.createdAt,
         updatedAt: e.node.updatedAt,
         ...Object.fromEntries(
-          Object.entries(e.node.data).map(([k, v]) => [`data.${k}`, v])
+          Object.entries(e.node.data ?? {}).map(([k, v]) => [`data.${k}`, v])
         ),
       }));
       printSuccess(`Found ${records.length} record(s)`);
@@ -304,12 +347,14 @@ recordsCommand
         const pageSize = 100;
         const result = await graphqlRequest<{
           dataRecords: {
-            edges: { cursor: string; node: DataRecord }[];
+            edges: { node: DataRecord }[];
+            pageInfo: { endCursor: string | null };
           };
         }>({
           query: `query($tableId: ID!, $pagination: DataRecordsPaginationInput) {
   dataRecords(tableId: $tableId, pagination: $pagination) {
-    edges { cursor node { ${DATA_RECORD_FIELDS} } }
+    edges { node { ${DATA_RECORD_FIELDS} } }
+    pageInfo { endCursor }
   }
 }`,
           variables: {
@@ -318,7 +363,7 @@ recordsCommand
           },
         });
 
-        const { edges } = result.dataRecords;
+        const { edges, pageInfo } = result.dataRecords;
 
         for (const { node: record } of edges) {
           allRecords.push({
@@ -326,18 +371,21 @@ recordsCommand
             createdAt: record.createdAt,
             updatedAt: record.updatedAt,
             ...Object.fromEntries(
-              Object.entries(record.data).map(([k, v]) => [`data.${k}`, v])
+              Object.entries(record.data ?? {}).map(([k, v]) => [
+                `data.${k}`,
+                v,
+              ])
             ),
           });
         }
 
-        if (edges.length === pageSize) {
-          cursor = edges.at(-1)?.cursor;
+        if (edges.length === pageSize && pageInfo.endCursor) {
+          cursor = pageInfo.endCursor;
           spinner.text = `Fetching records... (${allRecords.length} so far)`;
         } else {
           cursor = undefined;
         }
-      } while (cursor !== undefined);
+      } while (cursor);
 
       spinner.text = "Writing file...";
 
@@ -492,29 +540,11 @@ recordsCommand
     const spinner = yoctoSpinner({ text: "Querying records..." }).start();
     try {
       const tableId = await resolveTableId(tableKey);
-      const variables: Record<string, unknown> = {
-        tableId,
-        pagination: { first: 100 },
-      };
+      const filter = options.where?.length
+        ? { fieldFilters: parseWhereClause(options.where) }
+        : undefined;
 
-      if (options.where?.length) {
-        variables.filter = { fieldFilters: parseWhereClause(options.where) };
-      }
-
-      const result = await graphqlRequest<{
-        dataRecords: {
-          edges: { node: DataRecord }[];
-        };
-      }>({
-        query: `query($tableId: ID!, $filter: DataRecordsFilterInput, $pagination: DataRecordsPaginationInput) {
-  dataRecords(tableId: $tableId, filter: $filter, pagination: $pagination) {
-    edges { node { ${DATA_RECORD_FIELDS} } }
-  }
-}`,
-        variables,
-      });
-
-      const targets = result.dataRecords.edges.map((e) => e.node);
+      const targets = await fetchAllRecords(spinner, tableId, filter);
 
       if (targets.length === 0) {
         spinner.stop();

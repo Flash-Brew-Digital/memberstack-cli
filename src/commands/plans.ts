@@ -441,7 +441,15 @@ plansCommand
       });
       spinner.stop();
       printSuccess("Plans reordered successfully.");
-      printTable(result.orderPlans);
+      const rows = (result.orderPlans ?? []).map((plan) => ({
+        id: plan.id,
+        name: plan.name,
+        status: plan.status,
+        isPaid: plan.isPaid,
+        memberCount: plan.memberCount,
+        priority: plan.priority,
+      }));
+      printTable(rows);
     } catch (error) {
       spinner.stop();
       printError(

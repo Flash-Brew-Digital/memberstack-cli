@@ -268,7 +268,14 @@ recordsCommand
         variables,
       });
       spinner.stop();
-      const records = result.dataRecords.edges.map((e) => e.node);
+      const records = result.dataRecords.edges.map((e) => ({
+        id: e.node.id,
+        createdAt: e.node.createdAt,
+        updatedAt: e.node.updatedAt,
+        ...Object.fromEntries(
+          Object.entries(e.node.data).map(([k, v]) => [`data.${k}`, v])
+        ),
+      }));
       printSuccess(`Found ${records.length} record(s)`);
       printTable(records);
     } catch (error) {

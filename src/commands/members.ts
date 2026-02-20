@@ -654,7 +654,7 @@ membersCommand
 
       spinner.stop();
       printSuccess(`Found ${members.length} member(s)`);
-      printTable(members);
+      printTable(members.map(flattenMember));
     } catch (error) {
       spinner.stop();
       printError(

@@ -75,7 +75,17 @@ tablesCommand
         query: `query { dataTables { ${TABLE_FIELDS} } }`,
       });
       spinner.stop();
-      printTable(result.dataTables);
+      const rows = result.dataTables.map((t) => ({
+        id: t.id,
+        key: t.key,
+        name: t.name,
+        createdAt: t.createdAt,
+        createRule: t.createRule,
+        readRule: t.readRule,
+        updateRule: t.updateRule,
+        deleteRule: t.deleteRule,
+      }));
+      printTable(rows);
     } catch (error) {
       spinner.stop();
       printError(

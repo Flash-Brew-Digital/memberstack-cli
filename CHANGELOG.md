@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.3.0](https://github.com/Flash-Brew-Digital/memberstack-cli/compare/v1.2.0...v1.3.0) (2026-02-20)
+
+
+### Features
+
+* add auth update-profile command ([#11](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/11)) ([94bed09](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/94bed096db96f88533d7e79addbe8302a4dbb2bb))
+* add prices command for managing plan prices ([#13](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/13)) ([d963262](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/d9632620426db580e0281ea73ee9ec52dd3495d8))
+
 ## [1.2.0](https://github.com/Flash-Brew-Digital/memberstack-cli/compare/v1.1.0...v1.2.0) (2026-02-20)
 
 

@@ -377,7 +377,7 @@ membersCommand
     []
   )
   .option("--meta-data <key=value>", "Metadata field (repeatable)", collect, [])
-  .option("--json <json>", "JSON data (as JSON string)")
+  .option("--json-data <json>", "JSON data (as JSON string)")
   .option("--login-redirect <url>", "Login redirect URL")
   .action(async (id: string, options: MembersUpdateOptions) => {
     const spinner = yoctoSpinner({ text: "Updating member..." }).start();
@@ -399,8 +399,8 @@ membersCommand
       if (options.metaData?.length) {
         input.metaData = parseKeyValuePairs(options.metaData);
       }
-      if (options.json) {
-        input.json = parseJsonString(options.json);
+      if (options.jsonData) {
+        input.json = parseJsonString(options.jsonData);
       }
       if (options.loginRedirect) {
         input.loginRedirect = options.loginRedirect;

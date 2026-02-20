@@ -1,0 +1,31 @@
+src/commands/users.ts
+  ba605bd9b248a468 1-7,9-11,13-237
+src/index.ts
+  ba605bd9b248a468 14,66
+tests/commands/users.test.ts
+  ba605bd9b248a468 1-174
+README.md
+  ba605bd9b248a468 66
+ARCHITECTURE.md
+  ba605bd9b248a468 26,49
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "cfee9c49dddc7bdb9032388e0e7c2cc3b551137b",
+  "prompts": {
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 415,
+      "total_deletions": 2,
+      "accepted_lines": 414,
+      "overriden_lines": 1
+    }
+  }
+}

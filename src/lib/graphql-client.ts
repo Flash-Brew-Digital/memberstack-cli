@@ -35,7 +35,7 @@ export const graphqlRequest = async <T>(
     );
   }
 
-  const mode = program.opts().live ? "live" : "sandbox";
+  const mode: string = program.opts().mode;
   const endpoint = `${GRAPHQL_BASE_URL}?mode=${mode}`;
 
   const headers: Record<string, string> = {

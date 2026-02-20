@@ -1,0 +1,31 @@
+ARCHITECTURE.md
+  ba605bd9b248a468 23,47
+tests/commands/prices.test.ts
+  ba605bd9b248a468 1-161
+README.md
+  ba605bd9b248a468 63
+src/commands/prices.ts
+  ba605bd9b248a468 1-54,56-93,95,98,101,104,107,110,113,116,119,122,125,127-188,190,193,196,199,202,205,208,211,214,217,220,223,226,229,232,234-343
+src/index.ts
+  ba605bd9b248a468 11,64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "158455d52c92e270b42bc53d64a04bbca16c5ac7",
+  "prompts": {
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 473,
+      "total_deletions": 11,
+      "accepted_lines": 456,
+      "overriden_lines": 27
+    }
+  }
+}

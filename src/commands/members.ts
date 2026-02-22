@@ -454,6 +454,32 @@ membersCommand
   });
 
 membersCommand
+  .command("note")
+  .description("Update a member's note")
+  .argument("<id>", "Member ID (mem_...)")
+  .option("--text <text>", "Note text (omit to clear)")
+  .action(async (id: string, opts: { text?: string }) => {
+    const spinner = yoctoSpinner({ text: "Updating note..." }).start();
+    try {
+      const result = await graphqlRequest<{ updateMemberNote: Member }>({
+        query: `mutation($input: UpdateMemberNoteInput!) {
+  updateMemberNote(input: $input) { ${MEMBER_FIELDS} }
+}`,
+        variables: { input: { memberId: id, note: opts.text ?? "" } },
+      });
+      spinner.stop();
+      printSuccess(`Note updated for member ${id}.`);
+      printRecord(result.updateMemberNote);
+    } catch (error) {
+      spinner.stop();
+      printError(
+        error instanceof Error ? error.message : "An unknown error occurred"
+      );
+      process.exitCode = 1;
+    }
+  });
+
+membersCommand
   .command("delete")
   .description("Delete a member")
   .argument("<id>", "Member ID (mem_...)")

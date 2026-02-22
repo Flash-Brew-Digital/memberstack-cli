@@ -205,6 +205,31 @@ describe("members", () => {
     expect(call.variables.input.json).toEqual({ key: "value" });
   });
 
+  it("note sends memberId and text", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateMemberNote: mockMember });
+
+    await runCommand(membersCommand, [
+      "note",
+      "mem_1",
+      "--text",
+      "VIP customer",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.memberId).toBe("mem_1");
+    expect(call.variables.input.note).toBe("VIP customer");
+  });
+
+  it("note clears when no text provided", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateMemberNote: mockMember });
+
+    await runCommand(membersCommand, ["note", "mem_1"]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.memberId).toBe("mem_1");
+    expect(call.variables.input.note).toBe("");
+  });
+
   it("handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Unauthorized"));
 

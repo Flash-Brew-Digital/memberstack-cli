@@ -25,8 +25,10 @@ memberstack-cli/
 │   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
 │   │   ├── skills.ts           # Agent skill add/remove (wraps npx skills)
 │   │   ├── providers.ts        # Auth provider management (list, configure, remove)
+│   │   ├── reset.ts            # Delete local data files and clear authentication
 │   │   ├── sso.ts              # SSO app management (list, create, update, delete)
 │   │   ├── tables.ts           # Data table CRUD, describe
+│   │   ├── update.ts           # Self-update CLI via detected package manager
 │   │   ├── users.ts            # App user management (list, get, add, remove, update-role)
 │   │   └── whoami.ts           # Show current app and user
 │   │
@@ -52,8 +54,10 @@ memberstack-cli/
 │   │   ├── records.test.ts
 │   │   ├── skills.test.ts
 │   │   ├── providers.test.ts
+│   │   ├── reset.test.ts
 │   │   ├── sso.test.ts
 │   │   ├── tables.test.ts
+│   │   ├── update.test.ts
 │   │   ├── users.test.ts
 │   │   └── whoami.test.ts
 │   │
@@ -103,7 +107,7 @@ Each file exports a Commander `Command` with subcommands. Most commands follow t
 4. Output results via `printTable()`, `printRecord()`, or `printSuccess()`
 5. Catch errors and set `process.exitCode = 1`
 
-The `skills` command is an exception — it wraps `npx skills` (child process) to add/remove agent skills instead of calling the GraphQL API.
+The `skills` and `update` commands are exceptions — they wrap child processes (`npx skills` and the user's package manager respectively) instead of calling the GraphQL API. The `reset` command performs local cleanup only (deletes `members.json`/`members.csv` and clears stored auth tokens).
 
 Repeatable options use a `collect` helper: `(value, previous) => [...previous, value]`.
 

@@ -1,0 +1,40 @@
+README.md
+  ba605bd9b248a468 69
+tests/commands/providers.test.ts
+  ba605bd9b248a468 14
+ARCHITECTURE.md
+  ba605bd9b248a468 27,53
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "5712a4f473fad137eaaf566d181219a07baefbc1",
+  "prompts": {
+    "b05e1110bdada903": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "da484e86-6880-4af2-b198-f120cb1b293d",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 9,
+      "total_deletions": 0,
+      "accepted_lines": 2,
+      "overriden_lines": 0
+    },
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 350,
+      "total_deletions": 59,
+      "accepted_lines": 5,
+      "overriden_lines": 0
+    }
+  }
+}

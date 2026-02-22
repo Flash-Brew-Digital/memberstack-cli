@@ -25,6 +25,7 @@ memberstack-cli/
 │   │   ├── records.ts          # Record CRUD, query, find, import/export, bulk ops
 │   │   ├── skills.ts           # Agent skill add/remove (wraps npx skills)
 │   │   ├── providers.ts        # Auth provider management (list, configure, remove)
+│   │   ├── sso.ts              # SSO app management (list, create, update, delete)
 │   │   ├── tables.ts           # Data table CRUD, describe
 │   │   ├── users.ts            # App user management (list, get, add, remove, update-role)
 │   │   └── whoami.ts           # Show current app and user
@@ -51,6 +52,7 @@ memberstack-cli/
 │   │   ├── records.test.ts
 │   │   ├── skills.test.ts
 │   │   ├── providers.test.ts
+│   │   ├── sso.test.ts
 │   │   ├── tables.test.ts
 │   │   ├── users.test.ts
 │   │   └── whoami.test.ts

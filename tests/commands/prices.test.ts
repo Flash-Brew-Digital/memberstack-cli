@@ -140,7 +140,107 @@ describe("prices", () => {
     );
   });
 
-  it("handles errors gracefully", async () => {
+  it("create with setup fee fields", async () => {
+    graphqlRequest.mockResolvedValueOnce({ createPrice: mockPrice });
+
+    await runCommand(pricesCommand, [
+      "create",
+      "--plan-id",
+      "pln_1",
+      "--name",
+      "Pro",
+      "--amount",
+      "29.99",
+      "--type",
+      "SUBSCRIPTION",
+      "--setup-fee-amount",
+      "10",
+      "--setup-fee-name",
+      "Onboarding",
+      "--setup-fee-enabled",
+      "--free-trial-requires-card",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.setupFeeAmount).toBe(10);
+    expect(call.variables.input.setupFeeName).toBe("Onboarding");
+    expect(call.variables.input.setupFeeEnabled).toBe(true);
+    expect(call.variables.input.freeTrialRequiresCard).toBe(true);
+  });
+
+  it("create with expiration and cancel-at-period-end", async () => {
+    graphqlRequest.mockResolvedValueOnce({ createPrice: mockPrice });
+
+    await runCommand(pricesCommand, [
+      "create",
+      "--plan-id",
+      "pln_1",
+      "--name",
+      "Limited",
+      "--amount",
+      "49",
+      "--type",
+      "ONETIME",
+      "--expiration-count",
+      "6",
+      "--expiration-interval",
+      "MONTHS",
+      "--cancel-at-period-end",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.expirationCount).toBe(6);
+    expect(call.variables.input.expirationInterval).toBe("MONTHS");
+    expect(call.variables.input.cancelAtPeriodEnd).toBe(true);
+  });
+
+  it("update with all optional fields", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updatePrice: mockPrice });
+
+    await runCommand(pricesCommand, [
+      "update",
+      "prc_1",
+      "--type",
+      "SUBSCRIPTION",
+      "--currency",
+      "eur",
+      "--interval-type",
+      "YEARLY",
+      "--interval-count",
+      "1",
+      "--setup-fee-amount",
+      "5",
+      "--setup-fee-name",
+      "Setup",
+      "--setup-fee-enabled",
+      "--free-trial-enabled",
+      "--free-trial-requires-card",
+      "--free-trial-days",
+      "7",
+      "--expiration-count",
+      "12",
+      "--expiration-interval",
+      "MONTHS",
+      "--cancel-at-period-end",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.type).toBe("SUBSCRIPTION");
+    expect(call.variables.input.currency).toBe("eur");
+    expect(call.variables.input.intervalType).toBe("YEARLY");
+    expect(call.variables.input.intervalCount).toBe(1);
+    expect(call.variables.input.setupFeeAmount).toBe(5);
+    expect(call.variables.input.setupFeeName).toBe("Setup");
+    expect(call.variables.input.setupFeeEnabled).toBe(true);
+    expect(call.variables.input.freeTrialEnabled).toBe(true);
+    expect(call.variables.input.freeTrialRequiresCard).toBe(true);
+    expect(call.variables.input.freeTrialDays).toBe(7);
+    expect(call.variables.input.expirationCount).toBe(12);
+    expect(call.variables.input.expirationInterval).toBe("MONTHS");
+    expect(call.variables.input.cancelAtPeriodEnd).toBe(true);
+  });
+
+  it("create handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Stripe error"));
 
     const original = process.exitCode;
@@ -155,6 +255,42 @@ describe("prices", () => {
       "--type",
       "ONETIME",
     ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("update handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Invalid price"));
+
+    const original = process.exitCode;
+    await runCommand(pricesCommand, ["update", "prc_bad", "--name", "Test"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("activate handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Already active"));
+
+    const original = process.exitCode;
+    await runCommand(pricesCommand, ["activate", "prc_bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("deactivate handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Cannot deactivate"));
+
+    const original = process.exitCode;
+    await runCommand(pricesCommand, ["deactivate", "prc_bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("delete handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("In use"));
+
+    const original = process.exitCode;
+    await runCommand(pricesCommand, ["delete", "prc_bad"]);
     expect(process.exitCode).toBe(1);
     process.exitCode = original;
   });

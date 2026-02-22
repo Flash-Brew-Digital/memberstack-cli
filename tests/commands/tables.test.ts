@@ -169,8 +169,96 @@ describe("tables", () => {
     );
   });
 
-  it("handles errors gracefully", async () => {
+  it("describe with no fields", async () => {
+    const emptyTable = { ...mockTable, fields: [] };
+    graphqlRequest.mockResolvedValueOnce({ dataTable: emptyTable });
+
+    await runCommand(tablesCommand, ["describe", "empty"]);
+
+    expect(graphqlRequest).toHaveBeenCalledWith(
+      expect.objectContaining({
+        variables: { key: "empty" },
+      })
+    );
+  });
+
+  it("describe with referenced table", async () => {
+    const tableWithRef = {
+      ...mockTable,
+      fields: [
+        {
+          id: "fld_2",
+          key: "author",
+          name: "Author",
+          type: "RELATION",
+          required: false,
+          defaultValue: null,
+          tableOrder: 1,
+          referencedTableId: "tbl_2",
+          referencedTable: { id: "tbl_2", key: "authors", name: "Authors" },
+        },
+      ],
+    };
+    graphqlRequest.mockResolvedValueOnce({ dataTable: tableWithRef });
+
+    await runCommand(tablesCommand, ["describe", "users"]);
+
+    expect(graphqlRequest).toHaveBeenCalled();
+  });
+
+  it("get handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Not found"));
+
+    const original = process.exitCode;
+    await runCommand(tablesCommand, ["get", "bad_key"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("describe handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not found"));
+
+    const original = process.exitCode;
+    await runCommand(tablesCommand, ["describe", "bad_key"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("create handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Duplicate key"));
+
+    const original = process.exitCode;
+    await runCommand(tablesCommand, [
+      "create",
+      "--name",
+      "Bad",
+      "--key",
+      "bad",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("update handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not found"));
+
+    const original = process.exitCode;
+    await runCommand(tablesCommand, ["update", "tbl_bad", "--name", "Test"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("delete handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Cannot delete"));
+
+    const original = process.exitCode;
+    await runCommand(tablesCommand, ["delete", "tbl_bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("list handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Network error"));
 
     const original = process.exitCode;
     await runCommand(tablesCommand, ["list"]);

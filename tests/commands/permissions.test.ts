@@ -179,11 +179,119 @@ describe("permissions", () => {
     expect(call.variables.input.permissionId).toBe("perm_1");
   });
 
-  it("handles errors gracefully", async () => {
+  it("update with description only", async () => {
+    graphqlRequest.mockResolvedValueOnce({
+      updatePermission: mockPermission,
+    });
+
+    await runCommand(permissionsCommand, [
+      "update",
+      "perm_1",
+      "--description",
+      "Updated desc",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.description).toBe("Updated desc");
+  });
+
+  it("list handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Unauthorized"));
 
     const original = process.exitCode;
     await runCommand(permissionsCommand, ["list"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("create handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Duplicate name"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, ["create", "--name", "bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("update handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not found"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, [
+      "update",
+      "perm_bad",
+      "--name",
+      "test",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("delete handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("In use"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, ["delete", "perm_bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("link-plan handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Plan not found"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, [
+      "link-plan",
+      "--plan-id",
+      "pln_bad",
+      "--permission-id",
+      "perm_1",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("unlink-plan handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not linked"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, [
+      "unlink-plan",
+      "--plan-id",
+      "pln_1",
+      "--permission-id",
+      "perm_bad",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("link-member handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Member not found"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, [
+      "link-member",
+      "--member-id",
+      "mem_bad",
+      "--permission-id",
+      "perm_1",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("unlink-member handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not linked"));
+
+    const original = process.exitCode;
+    await runCommand(permissionsCommand, [
+      "unlink-member",
+      "--member-id",
+      "mem_1",
+      "--permission-id",
+      "perm_bad",
+    ]);
     expect(process.exitCode).toBe(1);
     process.exitCode = original;
   });

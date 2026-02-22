@@ -59,6 +59,7 @@ memberstack skills add memberstack-cli
 | `whoami` | Show current authenticated app and user |
 | `apps` | View, create, update, delete, and restore apps |
 | `members` | List, create, update, delete, import/export, bulk ops |
+| `permissions` | Create, update, delete, and link/unlink to plans and members |
 | `plans` | List, create, update, delete, and reorder plans |
 | `prices` | Create, update, activate, deactivate, and delete prices |
 | `tables` | List, create, update, delete, and describe schema |

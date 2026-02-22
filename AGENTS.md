@@ -8,6 +8,7 @@ This file provides guidance to AI agents when working with code in this reposito
 pnpm build            # Build CLI with tsup (output: dist/)
 pnpm dev              # Run CLI from source via tsx (e.g. pnpm dev -- members list)
 pnpm test             # Run all tests with vitest
+pnpm test:coverage    # Run tests with v8 coverage reporting
 pnpm check            # Lint and format check (Biome via ultracite)
 pnpm fix              # Auto-fix lint and format issues
 pnpm type-check       # TypeScript type checking without emit

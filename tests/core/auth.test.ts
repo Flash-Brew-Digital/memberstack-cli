@@ -4,21 +4,24 @@ import { runCommand } from "../commands/helpers.js";
 const loadTokens = vi.fn();
 const clearTokens = vi.fn();
 const getValidAccessToken = vi.fn();
+const saveTokens = vi.fn();
 const revokeToken = vi.fn();
+const registerClient = vi.fn();
+const exchangeCodeForTokens = vi.fn();
 
 vi.mock("../../src/lib/token-storage.js", () => ({
   loadTokens: (...args: unknown[]) => loadTokens(...args),
   clearTokens: (...args: unknown[]) => clearTokens(...args),
-  saveTokens: vi.fn(),
+  saveTokens: (...args: unknown[]) => saveTokens(...args),
   getValidAccessToken: (...args: unknown[]) => getValidAccessToken(...args),
 }));
 vi.mock("../../src/lib/oauth.js", () => ({
-  registerClient: vi.fn(),
-  generateCodeVerifier: vi.fn().mockReturnValue("verifier"),
-  generateCodeChallenge: vi.fn().mockReturnValue("challenge"),
-  generateState: vi.fn().mockReturnValue("state"),
-  buildAuthorizationUrl: vi.fn().mockReturnValue("https://auth.example.com"),
-  exchangeCodeForTokens: vi.fn(),
+  registerClient: (...args: unknown[]) => registerClient(...args),
+  generateCodeVerifier: () => "verifier",
+  generateCodeChallenge: () => "challenge",
+  generateState: () => "test_state",
+  buildAuthorizationUrl: () => "https://auth.example.com",
+  exchangeCodeForTokens: (...args: unknown[]) => exchangeCodeForTokens(...args),
   revokeToken: (...args: unknown[]) => revokeToken(...args),
 }));
 vi.mock("open", () => ({ default: vi.fn() }));
@@ -32,6 +35,42 @@ vi.mock("../../src/lib/program.js", () => ({
   program: { opts: () => ({}) },
 }));
 
+let callbackHandler: ((req: unknown, res: unknown) => void) | null = null;
+
+const invokeCallback = (req: unknown, res: unknown): void => {
+  if (!callbackHandler) {
+    throw new Error("callbackHandler not set");
+  }
+  callbackHandler(req, res);
+};
+
+vi.mock("node:http", () => ({
+  createServer: (handler?: (req: unknown, res: unknown) => void) => {
+    if (handler) {
+      callbackHandler = handler;
+    }
+    const server: Record<string, unknown> = {};
+    server.listen = (...args: unknown[]) => {
+      const cb = args.find((a) => typeof a === "function") as
+        | (() => void)
+        | undefined;
+      if (cb) {
+        queueMicrotask(cb);
+      }
+      return server;
+    };
+    server.close = (cb?: () => void) => {
+      if (cb) {
+        queueMicrotask(cb);
+      }
+      return server;
+    };
+    server.address = () => ({ port: 3456 });
+    server.on = () => server;
+    return server;
+  },
+}));
+
 const graphqlRequest = vi.fn();
 vi.mock("../../src/lib/graphql-client.js", () => ({
   graphqlRequest: (...args: unknown[]) => graphqlRequest(...args),
@@ -40,6 +79,179 @@ vi.mock("../../src/lib/graphql-client.js", () => ({
 const { authCommand } = await import("../../src/commands/auth.js");
 
 describe("auth", () => {
+  describe("login", () => {
+    it("completes OAuth flow successfully", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+      exchangeCodeForTokens.mockResolvedValueOnce({
+        access_token: "at_abc",
+        refresh_token: "rt_abc",
+        expires_in: 3600,
+      });
+      saveTokens.mockResolvedValueOnce(undefined);
+
+      callbackHandler = null;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback({ url: "/callback?code=auth_code&state=test_state" }, res);
+
+      await promise;
+
+      expect(registerClient).toHaveBeenCalled();
+      expect(exchangeCodeForTokens).toHaveBeenCalledWith(
+        expect.objectContaining({
+          clientId: "client_123",
+          code: "auth_code",
+          codeVerifier: "verifier",
+        })
+      );
+      expect(saveTokens).toHaveBeenCalled();
+      expect(res.writeHead).toHaveBeenCalledWith(200, {
+        "Content-Type": "text/html",
+      });
+    });
+
+    it("handles authorization error in callback", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+
+      callbackHandler = null;
+      const original = process.exitCode;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback(
+        { url: "/callback?error=access_denied&error_description=User+denied" },
+        res
+      );
+
+      await promise;
+
+      expect(process.exitCode).toBe(1);
+      expect(res.writeHead).toHaveBeenCalledWith(400, {
+        "Content-Type": "text/html",
+      });
+      process.exitCode = original;
+    });
+
+    it("handles missing code/state in callback", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+
+      callbackHandler = null;
+      const original = process.exitCode;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback({ url: "/callback" }, res);
+
+      await promise;
+
+      expect(process.exitCode).toBe(1);
+      expect(res.writeHead).toHaveBeenCalledWith(400, {
+        "Content-Type": "text/html",
+      });
+      process.exitCode = original;
+    });
+
+    it("handles state mismatch in callback", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+
+      callbackHandler = null;
+      const original = process.exitCode;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback(
+        { url: "/callback?code=auth_code&state=wrong_state" },
+        res
+      );
+
+      await promise;
+
+      expect(process.exitCode).toBe(1);
+      expect(res.writeHead).toHaveBeenCalledWith(400, {
+        "Content-Type": "text/html",
+      });
+      process.exitCode = original;
+    });
+
+    it("returns 404 for non-callback paths", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+      exchangeCodeForTokens.mockResolvedValueOnce({
+        access_token: "at_abc",
+        refresh_token: "rt_abc",
+        expires_in: 3600,
+      });
+      saveTokens.mockResolvedValueOnce(undefined);
+
+      callbackHandler = null;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const notFoundRes = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback({ url: "/favicon.ico" }, notFoundRes);
+
+      expect(notFoundRes.writeHead).toHaveBeenCalledWith(404);
+      expect(notFoundRes.end).toHaveBeenCalledWith("Not found");
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback({ url: "/callback?code=auth_code&state=test_state" }, res);
+
+      await promise;
+
+      expect(saveTokens).toHaveBeenCalled();
+    });
+
+    it("handles registration failure", async () => {
+      registerClient.mockRejectedValueOnce(new Error("Registration failed"));
+
+      callbackHandler = null;
+      const original = process.exitCode;
+      await runCommand(authCommand, ["login"]);
+
+      expect(process.exitCode).toBe(1);
+      process.exitCode = original;
+    });
+
+    it("handles error param without description", async () => {
+      registerClient.mockResolvedValueOnce("client_123");
+
+      callbackHandler = null;
+      const original = process.exitCode;
+      const promise = runCommand(authCommand, ["login"]);
+
+      await vi.waitFor(() => {
+        expect(callbackHandler).not.toBeNull();
+      });
+
+      const res = { writeHead: vi.fn(), end: vi.fn() };
+      invokeCallback({ url: "/callback?error=server_error" }, res);
+
+      await promise;
+
+      expect(process.exitCode).toBe(1);
+      process.exitCode = original;
+    });
+  });
+
   describe("logout", () => {
     it("clears tokens and revokes refresh token", async () => {
       loadTokens.mockResolvedValueOnce({

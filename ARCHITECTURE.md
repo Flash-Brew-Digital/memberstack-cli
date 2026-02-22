@@ -2,7 +2,7 @@
 
 > **Project**: Memberstack CLI
 > **Repository**: https://github.com/Flash-Brew-Digital/memberstack-cli
-> **Last updated**: 2026-02-17
+> **Last updated**: 2026-02-22
 
 ## Overview
 
@@ -57,16 +57,20 @@ memberstack-cli/
 │   │
 │   └── core/                   # Core library tests
 │       ├── auth.test.ts
+│       ├── csv.test.ts
 │       ├── graphql-client.test.ts
+│       ├── index.test.ts
 │       ├── no-color.test.ts
 │       ├── oauth.test.ts
+│       ├── program.test.ts
 │       ├── program-options.test.ts
 │       ├── quiet.test.ts
+│       ├── token-storage.test.ts
 │       └── utils.test.ts
 │
 ├── dist/                       # Compiled output (ESM)
 ├── tsup.config.ts              # Bundler config (esbuild via tsup)
-├── vitest.config.ts            # Test config (mockReset, restoreMocks)
+├── vitest.config.ts            # Test config (mockReset, restoreMocks, v8 coverage)
 ├── biome.jsonc                 # Linter/formatter (Biome via Ultracite)
 └── package.json                # Node >=20, pnpm, type: module
 ```
@@ -168,12 +172,12 @@ All user-facing output (tables, spinners, messages) goes to **stderr**. JSON out
 | `open` | Opens browser for OAuth login |
 | `papaparse` | CSV parsing and generation |
 
-Dev: `tsup` (bundler), `tsx` (dev runner), `typescript`, `vitest` (tests), `biome` via `ultracite` (lint/format).
+Dev: `tsup` (bundler), `tsx` (dev runner), `typescript`, `vitest` (tests), `@vitest/coverage-v8` (coverage), `biome` via `ultracite` (lint/format).
 
 ## Build & CI
 
 - **Build**: `tsup` compiles `src/index.ts` to ESM in `dist/`
-- **Test**: `vitest` with mocked GraphQL client and spinner, covers all commands and core libraries
+- **Test**: `vitest` with mocked GraphQL client and spinner, covers all commands and core libraries (`pnpm test:coverage` for v8 coverage report)
 - **Lint**: Biome via `ultracite` (`pnpm check` / `pnpm fix`)
 - **Type check**: `tsc --noEmit` (`pnpm type-check`)
 - **PR checks** (`.github/workflows/pr-checks.yml`): type-check, lint, build, test on Node 24

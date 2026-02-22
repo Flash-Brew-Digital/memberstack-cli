@@ -115,8 +115,86 @@ describe("custom-fields", () => {
     );
   });
 
-  it("handles errors gracefully", async () => {
+  it("create with plan-ids", async () => {
+    graphqlRequest.mockResolvedValueOnce({ createCustomField: mockField });
+
+    await runCommand(customFieldsCommand, [
+      "create",
+      "--key",
+      "role",
+      "--label",
+      "Role",
+      "--plan-ids",
+      "pln_1",
+      "pln_2",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.planIds).toEqual(["pln_1", "pln_2"]);
+  });
+
+  it("update with optional fields", async () => {
+    graphqlRequest.mockResolvedValueOnce({ updateCustomField: mockField });
+
+    await runCommand(customFieldsCommand, [
+      "update",
+      "cf_1",
+      "--label",
+      "Updated",
+      "--hidden",
+      "--table-hidden",
+      "--visibility",
+      "PRIVATE",
+      "--restrict-to-admin",
+    ]);
+
+    const call = graphqlRequest.mock.calls[0][0];
+    expect(call.variables.input.hidden).toBe(true);
+    expect(call.variables.input.tableHidden).toBe(true);
+    expect(call.variables.input.visibility).toBe("PRIVATE");
+    expect(call.variables.input.restrictToAdmin).toBe(true);
+  });
+
+  it("create handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Validation error"));
+
+    const original = process.exitCode;
+    await runCommand(customFieldsCommand, [
+      "create",
+      "--key",
+      "bad",
+      "--label",
+      "Bad",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("update handles errors gracefully", async () => {
+    graphqlRequest.mockRejectedValueOnce(new Error("Not found"));
+
+    const original = process.exitCode;
+    await runCommand(customFieldsCommand, [
+      "update",
+      "cf_bad",
+      "--label",
+      "Test",
+    ]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("delete handles errors gracefully", async () => {
     graphqlRequest.mockRejectedValueOnce(new Error("Forbidden"));
+
+    const original = process.exitCode;
+    await runCommand(customFieldsCommand, ["delete", "cf_bad"]);
+    expect(process.exitCode).toBe(1);
+    process.exitCode = original;
+  });
+
+  it("handles non-Error exceptions", async () => {
+    graphqlRequest.mockRejectedValueOnce("string error");
 
     const original = process.exitCode;
     await runCommand(customFieldsCommand, ["list"]);

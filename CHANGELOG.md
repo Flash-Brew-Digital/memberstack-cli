@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.3.0](https://github.com/Flash-Brew-Digital/memberstack-cli/compare/v1.2.0...v1.3.0) (2026-02-22)
+
+
+### Features
+
+* add auth update-profile command ([#11](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/11)) ([94bed09](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/94bed096db96f88533d7e79addbe8302a4dbb2bb))
+* add members note command for updating member notes ([#15](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/15)) ([7f79150](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/7f79150b28f042b6aac8c6f845b422c4156731da))
+* add permissions command for managing plan and member permissions ([#14](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/14)) ([0148b94](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/0148b941546bf9e6be693af3798bfd5abb8820ea))
+* add prices command for managing plan prices ([#13](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/13)) ([d963262](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/d9632620426db580e0281ea73ee9ec52dd3495d8))
+* add providers command for managing auth providers ([#16](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/16)) ([5a4fe9b](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/5a4fe9ba8745923a08f7fcd39d98603103c5bdc9))
+* add sso command for managing SSO apps ([#18](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/18)) ([9a59bd2](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/9a59bd22be4e772d47ef3d0a0747b229ee0b823e))
+* add update and reset commands ([#19](https://github.com/Flash-Brew-Digital/memberstack-cli/issues/19)) ([052b716](https://github.com/Flash-Brew-Digital/memberstack-cli/commit/052b716a44e156f2c8dd64a727dcfd33ae56ec7f))
+
 ## [1.2.0](https://github.com/Flash-Brew-Digital/memberstack-cli/compare/v1.1.0...v1.2.0) (2026-02-20)
 
 

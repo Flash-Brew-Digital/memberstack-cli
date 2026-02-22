@@ -39,6 +39,7 @@ vi.mock("../../src/commands/records.js", () => ({
 vi.mock("../../src/commands/skills.js", () => ({
   skillsCommand: "skills",
 }));
+vi.mock("../../src/commands/sso.js", () => ({ ssoCommand: "sso" }));
 vi.mock("../../src/commands/tables.js", () => ({ tablesCommand: "tables" }));
 vi.mock("../../src/commands/users.js", () => ({ usersCommand: "users" }));
 vi.mock("../../src/commands/whoami.js", () => ({
@@ -115,12 +116,12 @@ describe("index", () => {
     expect(process.env.NO_COLOR).toBe("1");
   });
 
-  it("registers all 13 commands", async () => {
+  it("registers all 14 commands", async () => {
     process.argv = ["node", "memberstack"];
 
     await import("../../src/index.js");
 
-    expect(mockAddCommand).toHaveBeenCalledTimes(13);
+    expect(mockAddCommand).toHaveBeenCalledTimes(14);
   });
 
   it("calls parseAsync", async () => {

@@ -13,6 +13,7 @@ import { pricesCommand } from "./commands/prices.js";
 import { providersCommand } from "./commands/providers.js";
 import { recordsCommand } from "./commands/records.js";
 import { skillsCommand } from "./commands/skills.js";
+import { ssoCommand } from "./commands/sso.js";
 import { tablesCommand } from "./commands/tables.js";
 import { usersCommand } from "./commands/users.js";
 import { whoamiCommand } from "./commands/whoami.js";
@@ -71,5 +72,6 @@ program.addCommand(customFieldsCommand);
 program.addCommand(usersCommand);
 program.addCommand(providersCommand);
 program.addCommand(skillsCommand);
+program.addCommand(ssoCommand);
 
 await program.parseAsync();

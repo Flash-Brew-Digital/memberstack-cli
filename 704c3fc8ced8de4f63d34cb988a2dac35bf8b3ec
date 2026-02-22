@@ -1,0 +1,31 @@
+src/index.ts
+  ba605bd9b248a468 15,72
+ARCHITECTURE.md
+  ba605bd9b248a468 27,53
+src/commands/sso.ts
+  ba605bd9b248a468 1-138,140-167
+README.md
+  ba605bd9b248a468 69
+tests/commands/sso.test.ts
+  ba605bd9b248a468 1-121
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.1.4",
+  "base_commit_sha": "704c3fc8ced8de4f63d34cb988a2dac35bf8b3ec",
+  "prompts": {
+    "ba605bd9b248a468": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "7fdf35a9-4d21-408e-9eec-7ff2e0f2371e",
+        "model": "claude-opus-4-6"
+      },
+      "human_author": "Ben Sabic <bensabic@users.noreply.github.com>",
+      "messages": [],
+      "total_additions": 306,
+      "total_deletions": 15,
+      "accepted_lines": 292,
+      "overriden_lines": 0
+    }
+  }
+}

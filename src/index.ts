@@ -10,6 +10,7 @@ import { membersCommand } from "./commands/members.js";
 import { permissionsCommand } from "./commands/permissions.js";
 import { plansCommand } from "./commands/plans.js";
 import { pricesCommand } from "./commands/prices.js";
+import { providersCommand } from "./commands/providers.js";
 import { recordsCommand } from "./commands/records.js";
 import { skillsCommand } from "./commands/skills.js";
 import { tablesCommand } from "./commands/tables.js";
@@ -68,6 +69,7 @@ program.addCommand(tablesCommand);
 program.addCommand(recordsCommand);
 program.addCommand(customFieldsCommand);
 program.addCommand(usersCommand);
+program.addCommand(providersCommand);
 program.addCommand(skillsCommand);
 
 await program.parseAsync();

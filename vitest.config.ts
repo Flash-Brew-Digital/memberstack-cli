@@ -5,5 +5,12 @@ export default defineConfig({
     globals: true,
     restoreMocks: true,
     mockReset: true,
+    coverage: {
+      provider: "v8",
+      include: ["src/**/*.ts"],
+      exclude: ["src/lib/types.ts"],
+      reporter: ["text", "html"],
+      reportsDirectory: "coverage",
+    },
   },
 });

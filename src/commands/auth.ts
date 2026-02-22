@@ -209,7 +209,7 @@ authCommand
           `  ${pc.bold("Status:")}  ${pc.yellow("Not logged in")}\n`
         );
         process.stderr.write(
-          `\n  Run ${pc.cyan("memberstack-cli auth login")} to authenticate.\n`
+          `\n  Run ${pc.cyan("memberstack auth login")} to authenticate.\n`
         );
         process.stderr.write("\n");
         return;

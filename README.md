@@ -67,7 +67,10 @@ memberstack skills add memberstack-cli
 | `custom-fields` | List, create, update, and delete custom fields |
 | `users` | List, get, add, remove, and update roles for app users |
 | `providers` | List, configure, and remove auth providers (e.g. Google) |
+| `sso` | List, create, update, and delete SSO apps |
 | `skills` | Add/remove agent skills for Claude Code and Codex |
+| `update` | Update the CLI to the latest version |
+| `reset` | Delete local data files and clear authentication |
 
 For full command details and usage, see the [Command Reference](https://memberstack-cli.flashbrew.digital/docs/commands).
 
